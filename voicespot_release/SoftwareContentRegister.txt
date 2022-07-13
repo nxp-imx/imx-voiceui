@@ -1,0 +1,34 @@
+NXP Software Content Register
+
+Release - VoiceSpot_v0.23.2
+
+Outgoing License: LA_OPT_NXP_Software_License v33 January 2022 - Additional distribution license granted - Section 2.3 applies
+License File:     license.txt
+
+Release tag: v0.23.2
+
+--------------------------------------------
+
+Package:                    ARM Compute Library
+Version:                    21.08
+Outgoing License:           MIT
+License File:               ./licenses/MIT-ComputeLibrary.txt
+Package Category:           library
+Type of Content:            object code
+Description and comments:   Used for ARM Cortex-A accelerated math.
+Release Location:           ./iMX8M_CortexA53/Lib/librdsp_libvoicespotRPi.a
+Origin:                     https://github.com/ARM-software/ComputeLibrary
+
+--------------------------------------------
+
+Package:                    Ne10
+Version:                    1.2.1
+Outgoing License:           BSD 3-Clause
+License File:               ./licenses/BSD-Ne10.txt
+Package Category:           library
+Type of Content:            object code
+Description and comments:   Used for ARM Cortex-A accelerated math.
+Release Location:           ./iMX8M_CortexA53/Lib/librdsp_libvoicespotRPi.a
+Origin:                     https://github.com/projectNe10/Ne10
+
+--------------------------------------------

@@ -1,0 +1,19 @@
+# RetuneDSP repository
+
+This repository includes the deliveries from RetuneDSP team, base on
+it, we generate the VoiceSpot application and VoiceSeeker library.
+
+# VoiceSeeker_wrapper
+
+The code in VoiceSeeker_wrapper folder is used for generating the
+library used for AFE wrapper, please check the TODO.md in AFE.
+
+# Voice_UI_Test_app
+
+The code in Voice_UI_Test_app folder is used for generating the
+voice_ui_app which is known as an application that is VoiceSpot.
+This application uses the output of AFE for Voice detection.
+
+# How to compile
+
+Execute "make" in this folder or go to each folder execute "make".
