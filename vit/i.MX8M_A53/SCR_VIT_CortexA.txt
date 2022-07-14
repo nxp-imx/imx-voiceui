@@ -1,8 +1,8 @@
 NXP Software Content Register
 
-Release Name : VIT_v4.6.0
+Release Name : VIT_v4.6.1
 Description: Cortex-A53 Voice Intelligent Technology library
-Version: 4.6.0
+Version: 4.6.1
 
 Outgoing License : LA_OPT_NXP_Software_License - Additional Distribution License granted, license in Section 2.3 applies
 License file : LICENSE.txt

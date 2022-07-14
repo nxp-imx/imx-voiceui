@@ -15,7 +15,7 @@ INCLUDES = -I$(INC_DIR1) -I$(INC_DIR2) -I$(INC_DIR3) -I$(INC_DIR4) -I$(INC_DIR5)
 
 CPPFLAGS += -O3 -DNDEBUG -DRDSP_DISABLE_FILEIO -Wno-format-security
 
-LIBRARY = $(SRC_DIR1)/Lib/librdsp_libvoicespotRPi.a $(INC_DIR1)/aarch64/libNE10.a $(INC_DIR7)/libVIT_IMX8_A53_v04_06_00.a
+LIBRARY = $(SRC_DIR1)/Lib/librdsp_libvoicespotRPi.a $(INC_DIR1)/aarch64/libNE10.a $(INC_DIR7)/libVIT_IMX8_A53_4.6.1.a
 
 CPP_OBJS  = $(SRC_DIR3)/VoiceSpot.o \
             $(SRC_DIR3)/SignalProcessor_VoiceSpot.o \

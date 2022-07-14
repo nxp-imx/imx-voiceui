@@ -36,8 +36,8 @@ typedef _Bool           PL_BOOL;
 #define PL_FALSE        0
 
 typedef unsigned char	PL_UINT8;
-typedef char	        PL_CHAR;
-typedef char	        PL_INT8;
+typedef signed char	        PL_CHAR;
+typedef signed char	        PL_INT8;
 
 typedef	short	        PL_INT16;
 typedef unsigned short  PL_UINT16;
