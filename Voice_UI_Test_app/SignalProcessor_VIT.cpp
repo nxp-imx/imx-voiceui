@@ -222,7 +222,9 @@ namespace SignalProcessor {
 		Status = VIT_Process(VITHandle,
 				     &VIT_InputBuffers,
 				     &VIT_DetectionResults);
-		if (Status != VIT_SUCCESS)
+		if (Status == VIT_INVALID_DEVICE)
+			static int ret = printf("Invalid Device : %d\n", Status);
+		else if (Status != VIT_SUCCESS)
 			printf("VIT_Process error : %d\n", Status);
 
 		if (VIT_DetectionResults == VIT_VC_DETECTED)

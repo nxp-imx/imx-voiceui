@@ -140,6 +140,7 @@ int main(int argc, char *argv[]) {
 	int frameoffset = 0;
 	/* VIT uses a frame size of 160 samples */
 	int vit_frame_size = 160;
+	int vit_frame_count = 3 * 80;  /* 3 seconds*/
 	rdsp_buffer vit_frame_buf;
 	VIT_Handle_t VITHandle = PL_NULL;
 
@@ -229,6 +230,7 @@ int main(int argc, char *argv[]) {
 			if (keyword_start_offset_samples){
 				keyword_start_offset_samples += frameoffset/sampleSize;
 				voice_cmd_detect = true;
+				vit_frame_count = 3* 80;
 				// Reset VIT frame buffer
 				RdspBuffer_Reset(&vit_frame_buf);
 			}
@@ -260,6 +262,9 @@ int main(int argc, char *argv[]) {
 					break;
 				}
 			}
+			vit_frame_count--;
+			if (!vit_frame_count)
+				voice_cmd_detect = false;
 		}
 	}
 
