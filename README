@@ -17,3 +17,5 @@ This application uses the output of AFE for Voice detection.
 # How to compile
 
 Execute "make" in this folder or go to each folder execute "make".
+Use "make BUILD_ARCH=CortexA55" to build this project, if the build
+target arch is CortexA55

@@ -6,6 +6,8 @@ CPLUS_FLAGS =
 
 INSTALLDIR := ./release
 
+BUILD_ARCH = CortexA53
+
 all: VOICESEEKER VOICESPOT
 
 VOICESEEKER: | $(INSTALLDIR)
@@ -17,7 +19,7 @@ VOICESEEKER: | $(INSTALLDIR)
 	cp ./voicespot_release/models/NXP/HeyNXP_1_params.bin $(INSTALLDIR)/
 
 VOICESPOT: | $(INSTALLDIR)
-	echo "--- Build voiceseeker library ---"
+	echo "--- Build voicespot app ---"
 	make -C ./Voice_UI_Test_app
 	cp ./Voice_UI_Test_app/voice_ui_app $(INSTALLDIR)/
 
