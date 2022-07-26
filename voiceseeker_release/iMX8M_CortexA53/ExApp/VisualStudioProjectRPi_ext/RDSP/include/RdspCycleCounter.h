@@ -18,7 +18,11 @@ extern "C" {
 #include <intrin.h>
 #endif
 
+#ifdef RDSP_SIM
+#define RDSP_ENABLE_CYCLE_COUNT 1
+#else
 #define RDSP_ENABLE_CYCLE_COUNT 0
+#endif
 
 #if RDSP_ENABLE_CYCLE_COUNT==0
 
@@ -49,7 +53,7 @@ extern "C" {
 	}
 #elif defined(__aarch64__)
 	inline uint32_t read_ccount() {
-		uint32_t cc = 0;
+		uint64_t cc = 0;
 		asm volatile("mrs %0, pmccntr_el0" : "=r"(cc)); // Read 64-bit cycle counter into val
 		return (uint32_t)cc;
 	}

@@ -10,28 +10,31 @@ NXP Confidential. This software is owned or controlled by NXP and may only be us
 
 #include <stdint.h>
 
-#ifdef HIFI4
+#if defined(FUSIONDSP)
+#include <xtensa/tie/xt_fusion.h>
+#endif
+#if defined(HIFI3)
+#include <xtensa/tie/xt_hifi3.h>
+#endif
+#if defined(HIFI4)
 #include <xtensa/tie/xt_hifi4.h>
-#include <xtensa/tie/xt_FP.h>
-#include "NatureDSP_Signal.h"
-#include "NatureDSP_types.h"
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifdef HIFI4
-	typedef xtfloat rfloat;
-	typedef xtfloatx2 rfloat2;
+#if defined(HIFI3) || defined(HIFI4) || defined(FUSIONDSP)
+	typedef xtfloat rdsp_float;
+	typedef xtfloatx2 rdsp_floatx2;
 	typedef xtfloatx2 rdsp_complex;
 #else
-	typedef float rfloat;
-	typedef float rfloat2[2];
+	typedef float rdsp_float;
+	typedef float rdsp_floatx2[2];
 	typedef float rdsp_complex[2];
 #endif
 
-	typedef rfloat rdsp_coordinate_xyz_t[3];
+	typedef rdsp_float rdsp_coordinate_xyz_t[3];
 
 #ifdef __cplusplus
 }

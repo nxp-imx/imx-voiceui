@@ -39,19 +39,19 @@ namespace SignalProcessor {
 		scratch_memory{ nullptr }, ref_in{ nullptr }, mic_in{ nullptr }, vsl{ 0 }, vsl_config{ 0 }, disable_trigger_frame_counter{0},
 		num_delay_files{ 0 }, fid_delay_files_open{false}, debugEnable{ false }{
 
-		RDSP_PRINTF("VoiceSeekerLight App v%i.%i.%i\n", RDSP_VOICESEEKER_LIGHT_APP_VERSION_MAJOR, RDSP_VOICESEEKER_LIGHT_APP_VERSION_MINOR, RDSP_VOICESEEKER_LIGHT_APP_VERSION_PATCH);
+		printf("VoiceSeekerLight App v%i.%i.%i\n", RDSP_VOICESEEKER_LIGHT_APP_VERSION_MAJOR, RDSP_VOICESEEKER_LIGHT_APP_VERSION_MINOR, RDSP_VOICESEEKER_LIGHT_APP_VERSION_PATCH);
 
 		setDefaultSettings(); //Initialize the _signalProcessorSettings to default values
 
 		//Allocate memory
 		void* heap_memory = malloc(heap_size);
 		if (heap_memory == NULL) {
-			RDSP_PRINTF("VoiceSeekerLight_Create: failed to allocate for heap_memory\n");
+			printf("VoiceSeekerLight_Create: failed to allocate for heap_memory\n");
 			return;
 		}
 		void* scratch_memory = malloc(scratch_size);
 		if (scratch_memory == NULL) {
-			RDSP_PRINTF("VoiceSeekerLight_Create: failed to allocate for scratch_memory\n");
+			printf("VoiceSeekerLight_Create: failed to allocate for scratch_memory\n");
 			return;
 		}
 		/*
@@ -74,7 +74,7 @@ namespace SignalProcessor {
 		// Specify mic geometry
 		vsl_config.mic_xyz_mm = (rdsp_coordinate_xyz_t*)malloc(sizeof(rdsp_coordinate_xyz_t) * vsl_config.num_mics);
 		if (vsl_config.mic_xyz_mm == NULL) {
-			RDSP_PRINTF("VoiceSeekerLight_Create: failed to allocate for mic geometry mem\n");
+			printf("VoiceSeekerLight_Create: failed to allocate for mic geometry mem\n");
 			return;
 		}
 
@@ -105,7 +105,7 @@ namespace SignalProcessor {
 		//VoiceSeekerLight creation
 		RdspStatus voiceseeker_status = VoiceSeekerLight_Create(&vsl, &vsl_config);
 		if (voiceseeker_status != OK) {
-			RDSP_PRINTF("VoiceSeekerLight_Create: voiceseeker_status = %d\n", voiceseeker_status);
+			printf("VoiceSeekerLight_Create: voiceseeker_status = %d\n", voiceseeker_status);
 			return;
 		}
 
@@ -304,7 +304,7 @@ namespace SignalProcessor {
 			float* vsl_out = NULL;
 			RdspStatus voiceseeker_status = VoiceSeekerLight_Process(&vsl, mic_in, ref_in, &vsl_out);
 			if (voiceseeker_status != OK) {
-				RDSP_PRINTF("VoiceSeekerLight_Process: voiceseeker_status = %d\n", (int32_t)voiceseeker_status);
+				printf("VoiceSeekerLight_Process: voiceseeker_status = %d\n", (int32_t)voiceseeker_status);
 				return -1;
 			}
 

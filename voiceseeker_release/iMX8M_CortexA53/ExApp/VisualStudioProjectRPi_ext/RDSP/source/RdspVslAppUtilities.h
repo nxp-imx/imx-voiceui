@@ -10,13 +10,15 @@
 #ifndef RDSP_VOICESEEKERLIGHT_APP_UTILITIES_H
 #define RDSP_VOICESEEKERLIGHT_APP_UTILITIES_H
 
+#include "libVoiceSeekerLight.h"
+#include "public/rdsp_voicespot.h"
+#include <stdio.h>
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "libVoiceSeekerLight.h"
-#include "public/rdsp_voicespot.h"
-	
 	/*
 	 * VoiceSpot utilities
 	 */

@@ -10,6 +10,7 @@
 #include "RdspVslAppUtilities.h"
 #include <string.h>
 #include <stdlib.h>
+
  /*
   * VoiceSpot Utilities
   */
@@ -82,7 +83,7 @@ int32_t rdsp_write_performance_file_header(RETUNE_VOICESEEKERLIGHT_plugin_t* APl
 		// Add information concerning the setup
 		fprintf(Afid, "libVoiceSeekerLight v%d.%d.%d\n", APluginInit->version.major, APluginInit->version.minor, APluginInit->version.patch);
 		fprintf(Afid, "samplerate,num_mics,num_spks,framesize_in,framesize_out\n");
-		fprintf(Afid, "%d,%d,%d,%d,%d\n\n",
+		fprintf(Afid, "%.0f,%d,%d,%d,%d\n\n",
 			APluginInit->config.samplerate,
 			APluginInit->config.num_mics,
 			APluginInit->config.num_spks,

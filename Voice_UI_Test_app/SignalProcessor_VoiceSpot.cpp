@@ -35,29 +35,29 @@ namespace SignalProcessor {
 
 		//Create VoiceSpot control structure
 		voicespot_status = rdspVoiceSpot_CreateControl(&voicespot_control, data_type);
-		RDSP_PRINTF("rdspVoiceSpot_CreateControl: voicespot_status = %d\n", (int32_t)voicespot_status);
+		printf("rdspVoiceSpot_CreateControl: voicespot_status = %d\n", (int32_t)voicespot_status);
 
 		//Create VoiceSpot instance
 		voicespot_status = rdspVoiceSpot_CreateInstance(voicespot_control, &voicespot_handle, enable_highpass_filter, generate_output);
-		RDSP_PRINTF("rdspVoiceSpot_CreateInstance: voicespot_status = %d\n", (int32_t)voicespot_status);
+		printf("rdspVoiceSpot_CreateInstance: voicespot_status = %d\n", (int32_t)voicespot_status);
 
 		//Load VoiceSpot keyword model
 		rdsp_import_voicespot_model("/unit_tests/nxp-afe/HeyNXP_en-US_1.bin", &model_blob, &model_blob_size);
-		RDSP_PRINTF("VoiceSpot model: HeyNXP_en-US_1.bin\r\n");
+		printf("VoiceSpot model: HeyNXP_en-US_1.bin\r\n");
 
 		//Check the integrity of the model
 		if (rdspVoiceSpot_CheckModelIntegrity(model_blob_size, model_blob) != RDSP_VOICESPOT_OK) {
-			RDSP_PRINTF("rdspVoiceSpot_CheckModelIntegrity: Model integrity check failed\n");
+			printf("rdspVoiceSpot_CheckModelIntegrity: Model integrity check failed\n");
 			return;
 		}
 
 		//Open the VoiceSpot instance
 		voicespot_status = rdspVoiceSpot_OpenInstance(voicespot_control, voicespot_handle, model_blob_size, model_blob, 0, 0);
-		RDSP_PRINTF("rdspVoiceSpot_OpenInstance: voicespot_status = %d\n", (int32_t)voicespot_status);
+		printf("rdspVoiceSpot_OpenInstance: voicespot_status = %d\n", (int32_t)voicespot_status);
 
 		//Enable use of the Adaptive Threshold mechanism
 		voicespot_status = rdspVoiceSpot_EnableAdaptiveThreshold(voicespot_control, voicespot_handle, adapt_threshold_mode);
-		RDSP_PRINTF("rdspVoiceSpot_EnableAdaptiveThreshold: voicespot_status = %d\n", voicespot_status);
+		printf("rdspVoiceSpot_EnableAdaptiveThreshold: voicespot_status = %d\n", voicespot_status);
 
 		//Set VoiceSpot parameters
 		char* voiceSpotParams = (char*) "/unit_tests/nxp-afe/HeyNXP_1_params.bin";
@@ -65,9 +65,9 @@ namespace SignalProcessor {
 
 		//Retrieve VoiceSpot configuration
 		rdspVoiceSpot_GetLibVersion(voicespot_control, &voicespot_version);
-		RDSP_PRINTF("VoiceSpot library version: %d.%d.%d.%u\n", voicespot_version.major, voicespot_version.minor, voicespot_version.patch, voicespot_version.build);
+		printf("VoiceSpot library version: %d.%d.%d.%u\n", voicespot_version.major, voicespot_version.minor, voicespot_version.patch, voicespot_version.build);
 		rdspVoiceSpot_GetModelInfo(voicespot_control, voicespot_handle, &voicespot_version, &voicespot_model_string, &voicespot_class_string, &num_samples_per_frame, &num_outputs);
-		RDSP_PRINTF("VoiceSpot model version: %d.%d.%d\n\n", voicespot_version.major, voicespot_version.minor, voicespot_version.patch);
+		printf("VoiceSpot model version: %d.%d.%d\n\n", voicespot_version.major, voicespot_version.minor, voicespot_version.patch);
 	}
 
 	int32_t SignalProcessor_VoiceSpot::voiceSpot_process(void* vsl_out, bool notify, int32_t iteration, int32_t enable_triggering) {
@@ -83,7 +83,7 @@ namespace SignalProcessor {
 		int32_t voicespot_status = rdspVoiceSpot_Process(voicespot_control, voicespot_handle, RDSP_PROCESSING_LEVEL__FULL, (uint8_t*)vsl_out, &num_scores, scores, (uint8_t**)sfb_output);
 
 		if (voicespot_status != RDSP_VOICESPOT_OK) {
-			RDSP_PRINTF("rdspVoiceSpot_Process: voicespot_status = %d\n", (int32_t)voicespot_status);
+			printf("rdspVoiceSpot_Process: voicespot_status = %d\n", (int32_t)voicespot_status);
 			return -1;
 		}
 		
@@ -101,15 +101,15 @@ namespace SignalProcessor {
 			voicespot_status = rdspVoiceSpot_EstimateStartAndStop(voicespot_control, voicespot_handle, score_index_trigger, -1, timing_accuracy, &keyword_start_offset_samples, &keyword_stop_offset_samples); // Comment out this line if timing estimation is not needed
 
 			if (voicespot_status != RDSP_VOICESPOT_OK)
-				RDSP_PRINTF("rdspVoiceSpot_EstimateStartAndStop: voicespot_status = %d\n", (int32_t)voicespot_status);
+				printf("rdspVoiceSpot_EstimateStartAndStop: voicespot_status = %d\n", (int32_t)voicespot_status);
 
 			//Log trigger
 			int32_t trigger_sample = framecount_out * framesize_out;
 			int32_t start_sample = trigger_sample - keyword_start_offset_samples;
 			int32_t stop_sample = trigger_sample - keyword_stop_offset_samples;
-			RDSP_PRINTF("trigger = %i, trigger_sample = %i, start_sample = %i, stop_sample = %i, score = %i\n", num_triggers, trigger_sample, start_sample, stop_sample, scores[0]);
-			RDSP_PRINTF("keyword_start_offset_samples = %i\n", keyword_start_offset_samples);
-			RDSP_PRINTF("ITER = %d\n", iteration);
+			printf("trigger = %i, trigger_sample = %i, start_sample = %i, stop_sample = %i, score = %i\n", num_triggers, trigger_sample, start_sample, stop_sample, scores[0]);
+			printf("keyword_start_offset_samples = %i\n", keyword_start_offset_samples);
+			printf("ITER = %d\n", iteration);
 
 			//Inform VoiceSeekerLight upon a trigger event
 			if (notify)

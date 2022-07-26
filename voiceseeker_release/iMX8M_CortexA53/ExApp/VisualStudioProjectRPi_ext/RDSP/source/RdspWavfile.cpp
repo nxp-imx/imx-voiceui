@@ -63,9 +63,7 @@ RDSP_STATIC rdsp_wav_file_t rdsp_wav_read_open(const char* Afilename) {
 	rdsp_wav_file_t wav_file = { 0 };
 
 	if (fid == NULL) {
-		char tmp_str[1024];
-		sprintf(tmp_str, "Failed to open %s, errno = %d\n", Afilename, errno);
-		printf(tmp_str);
+		printf("Failed to open %s, errno = %d\n", Afilename, errno);
 		return wav_file;
 	}
 
@@ -113,7 +111,7 @@ RDSP_STATIC void rdsp_wav_close(rdsp_wav_file_t* Awav_file) {
 		// Write trailing pad byte if the data size is not even
 		chunk_header_t hdr = read_chunk_header(fid, "data");
 		if ((hdr.chunk_size % 2) != 0) {
-			char null = '\0';
+			char null = 0;
 			fwrite(&null, sizeof(null), 1, fid);
 		}
 		fclose(Awav_file->fid);
