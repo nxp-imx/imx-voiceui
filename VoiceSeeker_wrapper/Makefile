@@ -1,4 +1,4 @@
-VERSION = 1.0
+VERSION = 2.0
 
 SRC_DIR1  = ../voiceseeker_release/iMX8M_CortexA53
 SRC_DIR2  = ../voiceseeker_release/iMX8M_CortexA53/ExApp/VisualStudioProjectRPi_ext/RDSP/source

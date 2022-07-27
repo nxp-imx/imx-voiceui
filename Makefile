@@ -13,7 +13,7 @@ all: VOICESEEKER VOICESPOT
 VOICESEEKER: | $(INSTALLDIR)
 	echo "--- Build voiceseeker library ---"
 	make -C ./VoiceSeeker_wrapper
-	cp ./VoiceSeeker_wrapper/libvoiceseekerlight.so $(INSTALLDIR)/
+	cp ./VoiceSeeker_wrapper/libvoiceseekerlight.so $(INSTALLDIR)/libvoiceseekerlight.so.2.0
 	cp ./VoiceSeeker_wrapper/Config.ini  $(INSTALLDIR)/
 	cp ./voicespot_release/models/NXP/HeyNXP_en-US_1.bin $(INSTALLDIR)/
 	cp ./voicespot_release/models/NXP/HeyNXP_1_params.bin $(INSTALLDIR)/
@@ -27,7 +27,7 @@ $(INSTALLDIR) :
 	mkdir $@
 
 clean:
-	rm -f ./release/libvoiceseekerlight.so
+	rm -f ./release/libvoiceseekerlight.so*
 	rm -f ./release/voice_ui_app
 	rm -f ./release/Config.ini
 	rm -f ./release/HeyNXP_en-US_1.bin
