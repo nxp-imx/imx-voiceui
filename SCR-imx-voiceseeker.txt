@@ -1,11 +1,11 @@
 NXP Software Content Register
 
 Package:            imx-voiceseeker
-Outgoing License:   LA_OPT_NXP_Software_License v33 January 2022 - Production Use, Section 2.3 applies
+Outgoing License:   LA_OPT_NXP_Software_License v38 August 2022 - Production Use, Section 2.3 applies
 Release Location:   Moderated download
 
 Component:          VoiceSeeker_wrapper
-Outgoing License:   LA_OPT_NXP_Software_License v33 January 2022 - Production Use, Section 2.3 applies
+Outgoing License:   LA_OPT_NXP_Software_License v38 August 2022 - Production Use, Section 2.3 applies
 Type of Content:    source
 Description:        providing a unified calling interface for audio-front-end
 Origin:             NXP (BSD-3-clause)
@@ -14,7 +14,7 @@ Origin:             NXP (BSD-3-clause)
                     https://github.com/zeux/pugixml (MIT)
 
 Component:          Voice_UI_Test_app
-Outgoing License:   LA_OPT_NXP_Software_License v33 January 2022 - Production Use, Section 2.3 applies
+Outgoing License:   LA_OPT_NXP_Software_License v38 August 2022 - Production Use, Section 2.3 applies
 Type of Content:    source
 Description:        User space test application for voice detection
 Origin:             NXP (BSD-3-clause)
