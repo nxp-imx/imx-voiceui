@@ -7,6 +7,7 @@ CPLUS_FLAGS =
 INSTALLDIR := ./release
 
 BUILD_ARCH = CortexA53
+export BUILD_ARCH
 
 all: VOICESEEKER VOICESPOT
 

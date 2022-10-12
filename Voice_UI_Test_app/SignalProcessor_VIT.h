@@ -14,10 +14,9 @@
 
 #define MODEL_LOCATION              VIT_MODEL_IN_ROM
 #define DEVICE_ID                   VIT_IMX8MA53
-#define VIT_OPERATING_MODE          VIT_VOICECMD_ENABLE                 // Enabling Voice Commands only
+#define VIT_OPERATING_MODE          VIT_VOICECMD_ENABLE	// Enabling Voice Commands only
+#define VIT_COMMAND_TIME_SPAN 		3.0 // in second
 #define NUMBER_OF_CHANNELS          _1CHAN
-#define VIT_MIC1_MIC2_DISTANCE      0
-#define VIT_MIC1_MIC3_DISTANCE      0
 #define MEMORY_ALIGNMENT            8     // in bytes
 
 namespace SignalProcessor {

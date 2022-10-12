@@ -3,8 +3,8 @@
 REL 04.07.04 - LA_OPT_NXP_Software_License
 ----------------------------------------------------------------------
 VIT integrating LP_VAD, WakeWordEngine Text2Model and Voice Commands Text2Model features.
-Core supported : Cortex_A53
-Library validated on i.MX8MMini and i.MX8MPlus platforms
+Core supported : Cortex_A55
+Library validated on i.MX93 platform
 
 Languages supported : English - Mandarin
 

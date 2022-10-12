@@ -12,15 +12,16 @@ INC_DIR5  = ./AudioStream
 INC_DIR6  = ../vit/i.MX8M_A53/Lib/Inc
 INC_DIR7  = ../vit/i.MX8M_A53/Lib
 INC_DIR8  = ../voiceseeker_release/rdsp_memory_utils_public
+INC_DIR9  = ../vit/i.MX9X_A55/Lib
 
 INCLUDES = -I$(INC_DIR1) -I$(INC_DIR2) -I$(INC_DIR3) -I$(INC_DIR4) -I$(INC_DIR5) -I$(INC_DIR6) -I$(INC_DIR7) -I$(INC_DIR8)
 
 CPPFLAGS += -O3 -DNDEBUG -DRDSP_DISABLE_FILEIO -Wno-format-security
 
 ifeq ($(BUILD_ARCH),CortexA55)
-	LIBRARY = $(SRC_DIR5)/Lib/librdsp_libvoicespotRPi.a $(INC_DIR1)/aarch64/libNE10.a $(INC_DIR7)/libVIT_IMX8_A53_4.6.1.a
+	LIBRARY = $(SRC_DIR5)/Lib/librdsp_libvoicespotRPi.a $(INC_DIR1)/aarch64/libNE10.a $(INC_DIR9)/libVIT_iMX9X_A55_v4.7.3_EAR.a
 else
-	LIBRARY = $(SRC_DIR1)/Lib/librdsp_libvoicespotRPi.a $(INC_DIR1)/aarch64/libNE10.a $(INC_DIR7)/libVIT_IMX8_A53_4.6.1.a
+	LIBRARY = $(SRC_DIR1)/Lib/librdsp_libvoicespotRPi.a $(INC_DIR1)/aarch64/libNE10.a $(INC_DIR7)/libVIT_iMX8M_A53_v4.7.3_EAR.a
 endif
 
 CPP_OBJS  = $(SRC_DIR3)/VoiceSpot.o \
@@ -43,7 +44,7 @@ $(PROGRAM) : $(CPP_OBJS)
 	$(CXX) $(CPP_OBJS) $(LIBRARY) $(LDFLAGS) -o $(PROGRAM) -lrt -lasound
 
 %.o: %.cpp
-	$(CXX) $(CPPFLAGS) $(INCLUDES) -fPIC -c -o $@ $<
+	$(CXX) $(CPPFLAGS) $(INCLUDES) -D ${BUILD_ARCH} -fPIC -c -o $@ $<
 
 clean:
 	rm -f $(SRC_DIR2)/*.o

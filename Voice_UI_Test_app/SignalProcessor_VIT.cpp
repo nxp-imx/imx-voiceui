@@ -57,6 +57,7 @@ namespace SignalProcessor {
 		if (Model_Info.pLanguage != PL_NULL)
 			printf("  Language supported : %s \n", Model_Info.pLanguage);
 
+		printf("  Number of WakeWords supported : %d \n", Model_Info.NbOfWakeWords);
 		printf("  Number of Commands supported : %d \n", Model_Info.NbOfVoiceCmds);
 		if (!Model_Info.WW_VoiceCmds_Strings)               // Check here if Model is containing WW and CMDs strings
 		{
@@ -65,6 +66,16 @@ namespace SignalProcessor {
 		else
 		{
 			const char* ptr;
+			printf("  WakeWord supported : \n");
+			ptr = Model_Info.pWakeWord_List;
+			if (ptr != PL_NULL)
+			{
+				for (PL_UINT16 i = 0; i < Model_Info.NbOfWakeWords; i++)
+				{
+					printf("   '%s' \n", ptr);
+					ptr += strlen(ptr) + 1;  // to consider NULL char
+				}
+			}
 			printf("  Voice commands supported : \n");
 			ptr = Model_Info.pVoiceCmds_List;
 			if (ptr != PL_NULL)
@@ -101,11 +112,16 @@ namespace SignalProcessor {
 			exit(-1);                                        // We can exit from here since memory is not allocated yet
 		}
 		VITInstParams.SampleRate_Hz = VIT_SAMPLE_RATE;
-		VITInstParams.SamplesPerFrame = VIT_SAMPLES_PER_FRAME;
-		VITInstParams.NumberOfChannel = NUMBER_OF_CHANNELS;
-		VITInstParams.DeviceId = DEVICE_ID;
-
-
+		VITInstParams.SamplesPerFrame = VIT_SAMPLES_PER_10MS_FRAME;
+		VITInstParams.NumberOfChannel = VIT_MAX_NUMBER_OF_CHANNEL;
+		VITInstParams.APIVersion = VIT_API_VERSION;
+#if defined CortexA55
+		VITInstParams.DeviceId = VIT_IMX9XA55;
+#elif defined CortexA53
+		VITInstParams.DeviceId = VIT_IMX8MA53;
+#else
+		VITInstParams.DeviceId = VIT_IMX8MA53;
+#endif
 		/*
 		 *   VIT get memory table : Get size info per memory type
 		 */
@@ -166,9 +182,8 @@ namespace SignalProcessor {
 		*   Set and Apply VIT control parameters
 		*/
 		VITControlParams.OperatingMode = VIT_OPERATING_MODE;
-		VITControlParams.MIC1_MIC2_Distance = VIT_MIC1_MIC2_DISTANCE;
-		VITControlParams.MIC1_MIC3_Distance = VIT_MIC1_MIC3_DISTANCE;
-		VITControlParams.Command_Time_Span = 3.0;
+		VITControlParams.Feature_LowRes = PL_FALSE;
+		VITControlParams.Command_Time_Span = VIT_COMMAND_TIME_SPAN;
 		if (!InitPhase_Error)
 		{
 			Status = VIT_SetControlParameters(VITHandle,
@@ -213,14 +228,11 @@ namespace SignalProcessor {
 	bool SignalProcessor_VIT::VIT_Process_Phase(VIT_Handle_t VITHandle, int16_t* frame_data, int16_t* pCmdId) {
 		VIT_ReturnStatus_en       Status;                                   // Status of the function
 		VIT_DetectionStatus_en    VIT_DetectionResults = VIT_NO_DETECTION;  // VIT detection result
-		// Resetting Input Buffer addresses provided to VIT_process() API
-		VIT_DataIn_st             VIT_InputBuffers = { PL_NULL, PL_NULL, PL_NULL };
+
 		VIT_VoiceCommand_st       VoiceCommand;                             // Voice Command id
 
-		VIT_InputBuffers.pBuffer_Chan1 = frame_data;                        // MIC input @16Khz - 16bits - 10ms buffer
-
 		Status = VIT_Process(VITHandle,
-				     &VIT_InputBuffers,
+				     (void *)frame_data,
 				     &VIT_DetectionResults);
 		if (Status == VIT_INVALID_DEVICE)
 			static int ret = printf("Invalid Device : %d\n", Status);
@@ -238,13 +250,13 @@ namespace SignalProcessor {
 			}
 			else
 			{
-				printf(" - Voice Command detected %d", VoiceCommand.Cmd_Id);
-				*pCmdId = VoiceCommand.Cmd_Id;
+				printf(" - Voice Command detected %d", VoiceCommand.Id);
+				*pCmdId = VoiceCommand.Id;
 
 				// Retrieve CMD Name : OPTIONAL
 				// Check first if CMD string is present
-				if (VoiceCommand.pCmd_Name != PL_NULL)
-					printf(" %s\n\n", VoiceCommand.pCmd_Name);
+				if (VoiceCommand.pName != PL_NULL)
+					printf(" %s\n\n", VoiceCommand.pName);
 				return true;
 			}
 		}
