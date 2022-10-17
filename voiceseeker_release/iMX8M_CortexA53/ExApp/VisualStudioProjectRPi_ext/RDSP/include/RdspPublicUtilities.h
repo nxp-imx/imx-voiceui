@@ -19,7 +19,7 @@ extern "C" {
  * Library options
  */
 
-#define RDSP_ENABLE_PRINTF 1
+#define RDSP_ENABLE_PRINTF 0
 #define RDSP_ENABLE_FILEIO 0
 
 /*

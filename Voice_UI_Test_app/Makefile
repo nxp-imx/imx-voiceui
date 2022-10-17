@@ -11,10 +11,11 @@ INC_DIR4  = ../voiceseeker_release/iMX8M_CortexA53/ExApp/VisualStudioProjectRPi_
 INC_DIR5  = ./AudioStream
 INC_DIR6  = ../vit/i.MX8M_A53/Lib/Inc
 INC_DIR7  = ../vit/i.MX8M_A53/Lib
-INC_DIR8  = ../voiceseeker_release/rdsp_memory_utils_public
+INC_DIR8  = ../voiceseeker_release/rdsp_utilities_public/rdsp_memory_utils_public
 INC_DIR9  = ../vit/i.MX9X_A55/Lib
+INC_DIR10  = ../voiceseeker_release/rdsp_utilities_public/include
 
-INCLUDES = -I$(INC_DIR1) -I$(INC_DIR2) -I$(INC_DIR3) -I$(INC_DIR4) -I$(INC_DIR5) -I$(INC_DIR6) -I$(INC_DIR7) -I$(INC_DIR8)
+INCLUDES = -I$(INC_DIR1) -I$(INC_DIR2) -I$(INC_DIR3) -I$(INC_DIR4) -I$(INC_DIR5) -I$(INC_DIR6) -I$(INC_DIR7) -I$(INC_DIR8) -I$(INC_DIR10)
 
 CPPFLAGS += -O3 -DNDEBUG -DRDSP_DISABLE_FILEIO -Wno-format-security
 

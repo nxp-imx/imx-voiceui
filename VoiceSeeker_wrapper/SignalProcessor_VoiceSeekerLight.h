@@ -60,6 +60,7 @@ namespace SignalProcessor {
 
 		RETUNE_VOICESEEKERLIGHT_plugin_t vsl;
 		rdsp_voiceseekerlight_config_t vsl_config;
+		rdsp_voiceseekerlight_constants_t vsl_constants;
 
 		enum class VoiceSeekerLightSignalProcessorState {
 			closed,

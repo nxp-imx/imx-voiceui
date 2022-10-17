@@ -8,17 +8,17 @@ NXP Confidential. This software is owned or controlled by NXP and may only be us
 #ifndef RDSP_CYCLE_COUNTER_H
 #define RDSP_CYCLE_COUNTER_H
 
+#include "RdspTypes.h"
+
+#ifdef _WIN32
+#include <intrin.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "RdspPluginTypes.h"
-
-#if _WIN32==1
-#include <intrin.h>
-#endif
-
-#ifdef RDSP_SIM
+#if RDSP_SIM
 #define RDSP_ENABLE_CYCLE_COUNT 1
 #else
 #define RDSP_ENABLE_CYCLE_COUNT 0

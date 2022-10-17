@@ -5,10 +5,15 @@ Copyright 2022 NXP
 NXP Confidential. This software is owned or controlled by NXP and may only be used strictly in accordance with the applicable license terms.  By expressly accepting such terms or by downloading, installing, activating and/or otherwise using the software, you are agreeing that you have read, and that you agree to comply with and are bound by, such license terms.  If you do not agree to be bound by the applicable license terms, then you may not retain, install, activate or otherwise use the software.
 */
 
-#ifndef RDSP_VOICESEEKERLIGHT_PLUGIN_TYPES_H_
-#define RDSP_VOICESEEKERLIGHT_PLUGIN_TYPES_H_
+#ifndef RDSP_PLATFORMS_H
+#define RDSP_PLATFORMS_H
 
 #include <stdint.h>
+
+#ifdef NXP_RT500_CM33
+#define RDSP_MATH_USES_POWERQUAD 1
+#include "fsl_powerquad.h"
+#endif
 
 #if defined(FUSIONDSP)
 #include <xtensa/tie/xt_fusion.h>
@@ -20,24 +25,38 @@ NXP Confidential. This software is owned or controlled by NXP and may only be us
 #include <xtensa/tie/xt_hifi4.h>
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+/* NatureDSP lib */
 #if defined(HIFI3) || defined(HIFI4) || defined(FUSIONDSP)
-	typedef xtfloat rdsp_float;
-	typedef xtfloatx2 rdsp_floatx2;
-	typedef xtfloatx2 rdsp_complex;
+#include "NatureDSP_Signal.h"
+#include "NatureDSP_types.h"
+#endif
+
+#if defined(HMD1A)
+#include "Biquad.h"
+#include "fr32_math.h"
+#include "fr32_utils.h"
+#include "fr32_xcc_ops.h"
+#include "TIE_defs.h"
+#include "TIE_include.h"
+#include "TIE_DSPInternal.h"
+#include "CoreLib.h"
+#include "FFT.h"
+#endif
+
+#ifdef __ARM_NEON
+#include "arm_neon.h"
+#endif
+
+#ifdef _WIN32
+#define RDSP_PRAGMA_USED 
 #else
-	typedef float rdsp_float;
-	typedef float rdsp_floatx2[2];
-	typedef float rdsp_complex[2];
+#define RDSP_PRAGMA_USED __attribute__((used))
 #endif
 
-	typedef rdsp_float rdsp_coordinate_xyz_t[3];
-
-#ifdef __cplusplus
-}
+#ifdef __ARM_NEON
+#define RDSP_PACKED __attribute__((__packed__))
+#else
+#define RDSP_PACKED
 #endif
 
-#endif // RDSP_VOICESEEKERLIGHT_PLUGIN_TYPES_H_
+#endif // RDSP_PLATFORMS_H

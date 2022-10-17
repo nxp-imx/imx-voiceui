@@ -43,15 +43,12 @@ namespace SignalProcessor {
 
 		setDefaultSettings(); //Initialize the _signalProcessorSettings to default values
 
+		VoiceSeekerLight_GetConstants(&vsl_constants);
 		//Allocate memory
-		void* heap_memory = malloc(heap_size);
+		uint32_t heap_req_bytes = VoiceSeekerLight_GetRequiredHeapMemoryBytes(&vsl, &vsl_config) + 200000;
+		void* heap_memory = malloc(heap_req_bytes);
 		if (heap_memory == NULL) {
 			printf("VoiceSeekerLight_Create: failed to allocate for heap_memory\n");
-			return;
-		}
-		void* scratch_memory = malloc(scratch_size);
-		if (scratch_memory == NULL) {
-			printf("VoiceSeekerLight_Create: failed to allocate for scratch_memory\n");
 			return;
 		}
 		/*
@@ -60,10 +57,7 @@ namespace SignalProcessor {
 
 		vsl.mem.pPrivateDataBase = heap_memory;
 		vsl.mem.pPrivateDataNext = heap_memory;
-		vsl.mem.FreePrivateDataSize = heap_size;
-		vsl.mem.pScratchDataBase = scratch_memory;
-		vsl.mem.pScratchDataNext = scratch_memory;
-		vsl.mem.FreeScratchDataSize = scratch_size;
+		vsl.mem.FreePrivateDataSize = heap_req_bytes;
 
 		vsl_config.num_mics = this->_inputChannelsCount;
 		vsl_config.num_spks = this->_referenceChannelsCount;
@@ -71,8 +65,15 @@ namespace SignalProcessor {
 		vsl_config.buffer_length_sec = RDSP_BUFFER_LENGTH_SEC;
 		vsl_config.aec_filter_length_ms = RDSP_AEC_FILTER_LENGTH_MS;
 
+#if defined CortexA55
+		vsl_config.device_id = Device_IMX93_CA55;
+#elif defined CortexA53
+		vsl_config.device_id = Device_IMX8M_CA53;
+#else
+		vsl_config.device_id = Device_IMX8M_CA53;
+#endif
 		// Specify mic geometry
-		vsl_config.mic_xyz_mm = (rdsp_coordinate_xyz_t*)malloc(sizeof(rdsp_coordinate_xyz_t) * vsl_config.num_mics);
+		vsl_config.mic_xyz_mm = (rdsp_xyz_t*)malloc(sizeof(rdsp_xyz_t) * vsl_config.num_mics);
 		if (vsl_config.mic_xyz_mm == NULL) {
 			printf("VoiceSeekerLight_Create: failed to allocate for mic geometry mem\n");
 			return;
@@ -113,9 +114,15 @@ namespace SignalProcessor {
 		VoiceSeekerLight_GetConfig(&vsl, &vsl_config);	//Retrieve VoiceSeekerLight configuration
 
 		// Unpack configuration
-		framesize_in = vsl_config.framesize_in;
+		framesize_in = vsl_constants.framesize_in;
 		framesize_out = vsl_config.framesize_out;
+		/*
+		* VoiceSeekerLight Version and configuration
+		*/
 
+		rdsp_voiceseekerlight_ver_struct_t vsl_version;
+		VoiceSeekerLight_GetLibVersion(&vsl, &vsl_version.major, &vsl_version.minor, &vsl_version.patch);
+		printf("VoiceSeekerLight_GetLibVersion: v%i.%i.%i\n", vsl_version.major, vsl_version.minor, vsl_version.patch);
 		VoiceSeekerLight_PrintConfig(&vsl); //Print VoiceSeekerLight configuration
 		VoiceSeekerLight_PrintMemOverview(&vsl); //Print VoiceSeekerLight memory overview
 
@@ -250,9 +257,9 @@ namespace SignalProcessor {
 				std::string micDelayName = "/tmp/mic_in_delay_S" + std::to_string(start_min) + "_E" + std::to_string(end_min) + ".wav";
 				std::string micOutName = "/tmp/mic_out_S" + std::to_string(start_min) + "_E" + std::to_string(end_min) + ".wav";
 
-				fid_ref_delay = rdsp_wav_write_open(refDelayName.c_str(), vsl_config.samplerate, this->_referenceChannelsCount, this->_sampleSize * 8, WAVE_FORMAT_PCM);
-				fid_mic_delay = rdsp_wav_write_open(micDelayName.c_str(), vsl_config.samplerate, this->_inputChannelsCount, this->_sampleSize * 8, WAVE_FORMAT_PCM);
-				fid_mic_out = rdsp_wav_write_open(micOutName.c_str(), vsl_config.samplerate, 1, this->_sampleSize * 8, WAVE_FORMAT_PCM);
+				fid_ref_delay = rdsp_wav_write_open(refDelayName.c_str(), vsl_constants.samplerate, this->_referenceChannelsCount, this->_sampleSize * 8, WAVE_FORMAT_PCM);
+				fid_mic_delay = rdsp_wav_write_open(micDelayName.c_str(), vsl_constants.samplerate, this->_inputChannelsCount, this->_sampleSize * 8, WAVE_FORMAT_PCM);
+				fid_mic_out = rdsp_wav_write_open(micOutName.c_str(), vsl_constants.samplerate, 1, this->_sampleSize * 8, WAVE_FORMAT_PCM);
 			}
 		}
 
@@ -293,8 +300,8 @@ namespace SignalProcessor {
 			if(this->debugEnable)
 			{
 				if (fid_delay_files_open) {
-					rdsp_wav_write_float(mic_in, vsl_config.framesize_in, &fid_mic_delay);
-					rdsp_wav_write_float(ref_in, vsl_config.framesize_in, &fid_ref_delay);
+					rdsp_wav_write_float(mic_in, vsl_constants.framesize_in, &fid_mic_delay);
+					rdsp_wav_write_float(ref_in, vsl_constants.framesize_in, &fid_ref_delay);
 				}
 			}
 
@@ -333,8 +340,8 @@ namespace SignalProcessor {
 				}
 			}
 
-			pnChannelMicBuffer += (this->_channel2output + vsl_config.framesize_in * shift);
-			delayedRefBuffer += (vsl_config.framesize_in * this->_referenceChannelsCount * this->_sampleSize);
+			pnChannelMicBuffer += (this->_channel2output + vsl_constants.framesize_in * shift);
+			delayedRefBuffer += (vsl_constants.framesize_in * this->_referenceChannelsCount * this->_sampleSize);
 		}
 
 		free(tmp_buf);

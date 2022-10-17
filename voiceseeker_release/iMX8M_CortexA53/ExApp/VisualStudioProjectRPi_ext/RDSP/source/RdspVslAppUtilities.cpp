@@ -44,7 +44,7 @@ void rdsp_import_voicespot_model(const char* Afilename, uint8_t** Amodel, uint32
 
 	//Read file contents into buffer
 	Amodel[0] += ((uintptr_t) * (Amodel)) % 16;
-	size_t ret = fread(*(Amodel), fileLen, 1, file);
+	size_t rt = fread(*(Amodel), fileLen, 1, file);
 	fclose(file);
 
 	*Amodel_size = fileLen;
@@ -84,10 +84,10 @@ int32_t rdsp_write_performance_file_header(RETUNE_VOICESEEKERLIGHT_plugin_t* APl
 		fprintf(Afid, "libVoiceSeekerLight v%d.%d.%d\n", APluginInit->version.major, APluginInit->version.minor, APluginInit->version.patch);
 		fprintf(Afid, "samplerate,num_mics,num_spks,framesize_in,framesize_out\n");
 		fprintf(Afid, "%.0f,%d,%d,%d,%d\n\n",
-			APluginInit->config.samplerate,
+			APluginInit->constants.samplerate,
 			APluginInit->config.num_mics,
 			APluginInit->config.num_spks,
-			APluginInit->config.framesize_in,
+			APluginInit->constants.framesize_in,
 			APluginInit->config.framesize_out);
 
 		// Add captions for trigger info
