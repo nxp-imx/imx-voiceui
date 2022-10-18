@@ -23,12 +23,18 @@ namespace SignalProcessor {
 
 	class SignalProcessor_VIT {
 
+	private:
+		bool VoiceSpotEnable;
+		bool VITWakeWordEnable;
 	public:
 		//Constructor
 		SignalProcessor_VIT();
+		VIT_Handle_t VIT_Handle;
 		VIT_Handle_t VIT_open_model();
 		void VIT_close_model(VIT_Handle_t VITHandle);
 		bool VIT_Process_Phase(VIT_Handle_t VITHandle, int16_t* frame_data, int16_t* pCmdId);
+		bool isVoiceSpotEnable();
+		bool isVITWakeWordEnable();
 	};
 
 }

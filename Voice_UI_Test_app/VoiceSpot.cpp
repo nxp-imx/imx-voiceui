@@ -103,6 +103,44 @@ int match(char *src, int src_len, queue* q, int *index) {
 	return found;
 }
 
+/**
+* @brief Transform buffer from VoiceSpot to VIT process
+*
+* This function is used for VIT process
+*
+* @param VIT            SignalProcessor_VIT class
+* @param buffer         buffer from VoiceSpot
+* @param vit_frame_buf  VIT frame buffer
+* @param vit_frame_siz  VIT frame size
+*
+* @return true if VIT has detection
+*/
+static bool VoiceSpotToVITProcess(SignalProcessor_VIT &VIT, void *buffer, rdsp_buffer *vit_frame_buf, int vit_frame_size) {
+	/* Since the frame size is different between VoiceSpot and VIT, a frame buffer is needed for VIT input audio */
+	int16_t vit_frame_buffer_lin[VOICESEEKER_OUT_NHOP];
+	float* frame_buffer_float = (float *)buffer;
+	rdsp_float_to_pcm((char *)vit_frame_buffer_lin, &frame_buffer_float, VOICESEEKER_OUT_NHOP, 1, 2);
+
+	/* Write buffered VoiceSpot audio frame to VIT frame buffer */
+	RdspBuffer_WriteInputBlocks(vit_frame_buf, VOICESEEKER_OUT_NHOP, (uint8_t*)vit_frame_buffer_lin);
+	bool command_found = false;
+	int16_t cmd_id = 0;
+	while (RdspBuffer_NumBlocksAvailable(vit_frame_buf, 0) >= (int32_t)vit_frame_size) {
+		/* Get vit_frame_buffer_lin samples for voice trigger */
+		RdspBuffer_ReadInputBlocks(vit_frame_buf, 0, vit_frame_size, (uint8_t*)vit_frame_buffer_lin);
+
+		/* Run VIT processing */
+		command_found = VIT.VIT_Process_Phase(VIT.VIT_Handle, vit_frame_buffer_lin, &cmd_id);
+		/* VIT command recognition phase is finalized */
+		/* command_found triggered when targeted Voice command is recognized or VIT detection timeout is reached */
+		if (command_found) {
+			/* Close VIT model */
+			return true;
+		}
+	}
+	return false;
+}
+
 //VoiceSpot's main
 int main(int argc, char *argv[]) {
 	ssize_t bytes_read;
@@ -159,6 +197,7 @@ int main(int argc, char *argv[]) {
 	SignalProcessor_VoiceSpot VoiceSpot{};
 	SignalProcessor_VIT VIT{};
 	VITHandle = VIT.VIT_open_model();
+	VIT.VIT_Handle = VITHandle;
 
 	AudioStream captureOutput;
 	captureOutput.open(captureOutputSettings);
@@ -201,6 +240,15 @@ int main(int argc, char *argv[]) {
 		rdsp_pcm_to_float(tmp_buf, &float_buffer, VOICESEEKER_OUT_NHOP, 1, sampleSize);
 		tmp_pos = 0;
 
+		if (VIT.isVITWakeWordEnable()) {
+			if (VIT.isVoiceSpotEnable()) {
+				printf("Disable voicespot if using VIT wakeword detection\n");
+				break;
+			}
+			bool VIT_Result = VoiceSpotToVITProcess(VIT, float_buffer, &vit_frame_buf, vit_frame_size);
+			continue;
+		}
+
 		bytes_read = mq_receive(mqVslOut, (char*)buffer, VSLOUTBUFFERSIZE, NULL);
 		bytes_read = mq_receive(mqIter, (char*)&iterations, sizeof(int32_t), NULL);
 		bytes_read = mq_receive(mqTrigg, (char*)&enable_triggering, sizeof(int32_t), NULL);
@@ -239,29 +287,7 @@ int main(int argc, char *argv[]) {
 		CHECK(0 <= mq_send(mqOffset, (char*)&keyword_start_offset_samples, sizeof(int32_t), 0));
 
 		if (voice_cmd_detect) {
-			/* Since the frame size is different between VoiceSpot and VIT, a frame buffer is needed for VIT input audio */
-			int16_t vit_frame_buffer_lin[VOICESEEKER_OUT_NHOP];
-			float* frame_buffer_float = (float *)buffer;
-			rdsp_float_to_pcm((char *)vit_frame_buffer_lin, &frame_buffer_float, VOICESEEKER_OUT_NHOP, 1, 2);
-
-			/* Write buffered VoiceSpot audio frame to VIT frame buffer */
-			RdspBuffer_WriteInputBlocks(&vit_frame_buf, VOICESEEKER_OUT_NHOP, (uint8_t*)vit_frame_buffer_lin);
-			bool command_found = false;
-			int16_t cmd_id = 0;
-			while (RdspBuffer_NumBlocksAvailable(&vit_frame_buf, 0) >= (int32_t)vit_frame_size) {
-				/* Get vit_frame_buffer_lin samples for voice trigger */
-				RdspBuffer_ReadInputBlocks(&vit_frame_buf, 0, vit_frame_size, (uint8_t*)vit_frame_buffer_lin);
-
-				/* Run VIT processing */
-				command_found = VIT.VIT_Process_Phase(VITHandle, vit_frame_buffer_lin, &cmd_id);
-				/* VIT command recognition phase is finalized */
-				/* command_found triggered when targeted Voice command is recognized or VIT detection timeout is reached */
-				if (command_found) {
-					/* Close VIT model */
-					voice_cmd_detect = false;
-					break;
-				}
-			}
+			voice_cmd_detect = !VoiceSpotToVITProcess(VIT, buffer, &vit_frame_buf, vit_frame_size);
 			vit_frame_count--;
 			if (!vit_frame_count)
 				voice_cmd_detect = false;

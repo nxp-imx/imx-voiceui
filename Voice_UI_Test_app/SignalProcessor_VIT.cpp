@@ -5,12 +5,16 @@
 
 #include <string.h>
 #include "SignalProcessor_VIT.h"
+#include "AFEConfigState.h"
 
 namespace SignalProcessor {
 
 	//Constructor
 	SignalProcessor_VIT::SignalProcessor_VIT() {
 
+		/* Using VoiceSpot to detect wakeword as default */
+		this->VoiceSpotEnable = true;
+		this->VITWakeWordEnable = false;
 	}
 
 	VIT_Handle_t SignalProcessor_VIT::VIT_open_model() {
@@ -24,6 +28,14 @@ namespace SignalProcessor {
 		VIT_ControlParams_st      VITControlParams;                         // VIT control parameters structure
 		PL_MemoryTable_st         VITMemoryTable;                           // VIT memory table descriptor
 		PL_INT8*		pMemory[PL_NR_MEMORY_REGIONS];		// Pointers to dynamically allocated memory
+
+		AFEConfig::AFEConfigState configState;
+		this->VoiceSpotEnable = (configState.isConfigurationEnable("VoiceSpotDisable", 0) == 1)? false : true;
+		this->VITWakeWordEnable = (configState.isConfigurationEnable("VITWakeWordEnable", 0) == 1)? true : false;
+		if (this->VoiceSpotEnable && this->VITWakeWordEnable) {
+			printf("VIT Configuration error: VoiceSpot and VIT WakeWord detection can't work together!\n");
+			exit(-1);
+		}
 
 		/*
 		 *   VIT Set Model : register the Model in VIT
@@ -182,6 +194,11 @@ namespace SignalProcessor {
 		*   Set and Apply VIT control parameters
 		*/
 		VITControlParams.OperatingMode = VIT_OPERATING_MODE;
+		if (this->VITWakeWordEnable && !this->VoiceSpotEnable) {
+			printf("Using VIT for wakeword detection.\n");
+			VITControlParams.OperatingMode = VIT_ALL_MODULE_ENABLE;
+		}
+
 		VITControlParams.Feature_LowRes = PL_FALSE;
 		VITControlParams.Command_Time_Span = VIT_COMMAND_TIME_SPAN;
 		if (!InitPhase_Error)
@@ -230,6 +247,7 @@ namespace SignalProcessor {
 		VIT_DetectionStatus_en    VIT_DetectionResults = VIT_NO_DETECTION;  // VIT detection result
 
 		VIT_VoiceCommand_st       VoiceCommand;                             // Voice Command id
+		VIT_WakeWord_st         wakeWord;
 
 		Status = VIT_Process(VITHandle,
 				     (void *)frame_data,
@@ -239,7 +257,30 @@ namespace SignalProcessor {
 		else if (Status != VIT_SUCCESS)
 			printf("VIT_Process error : %d\n", Status);
 
-		if (VIT_DetectionResults == VIT_VC_DETECTED)
+		if (VIT_DetectionResults == VIT_WW_DETECTED)
+		{
+			// Retrieve id of the Wakeword detected
+			// String of the WakeWord can also be retrieved (when WW and CMDs strings
+			// are integrated in Model)
+			Status = VIT_GetWakeWordFound(VITHandle, &wakeWord);
+			if (Status != VIT_SUCCESS)
+			{
+				printf("VIT_GetWakeWordFound error: %d\r\n", Status);
+				return false;
+			}
+			else
+			{
+				printf(" - Wakeword detected %d", wakeWord.Id);
+				// Retrieve WW Name: OPTIONAL
+				// Check first if WW string is present
+				if (wakeWord.pName != PL_NULL)
+				{
+					printf(" %s\n", wakeWord.pName);
+				}
+				return true;
+			}
+		}
+		else if (VIT_DetectionResults == VIT_VC_DETECTED)
 		{
 			// Retrieve id of the Voice Command detected
 			// String of the Command can also be retrieved (when WW and CMDs strings are integrated in Model)
@@ -262,5 +303,13 @@ namespace SignalProcessor {
 		}
 
 		return false;
+	}
+
+	bool SignalProcessor_VIT::isVoiceSpotEnable() {
+		return this->VoiceSpotEnable;
+	}
+
+	bool SignalProcessor_VIT::isVITWakeWordEnable() {
+		return this->VITWakeWordEnable;
 	}
 }
