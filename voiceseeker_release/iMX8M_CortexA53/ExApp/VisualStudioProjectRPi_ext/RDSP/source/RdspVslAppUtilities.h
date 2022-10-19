@@ -24,7 +24,7 @@ extern "C" {
 	 */
 
 	void rdsp_import_voicespot_model(const char* Afilename, uint8_t** Amodel, uint32_t* Amodel_size);
-	int32_t rdsp_set_voicespot_params(rdsp_voicespot_control* Avoicespot_control, int32_t Avoicespot_handle, char* Avoicespot_params);
+	int32_t rdsp_set_voicespot_params(rdsp_voicespot_control* Avoicespot_control, int32_t Avoicespot_handle, const char* Avoicespot_params);
 
 	/*
 	 * Performance log file

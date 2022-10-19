@@ -9,6 +9,7 @@
 
 #include "SignalProcessor_VoiceSpot.h"
 #include "SignalProcessor_NotifyTrigger.h"
+#include "AFEConfigState.h"
 
 namespace SignalProcessor {
 
@@ -20,6 +21,11 @@ namespace SignalProcessor {
 		num_outputs{ 0 }, last_notification{ 0 }, framecount_in{ 0 }, framecount_out{ 0 }, vad_timeout_frames{ 0 },
 		disable_trigger_frame_counter{ 0 },	num_triggers{ 0 }, voiceseeker_mcps_count{ 0 }, voiceseeker_mcps{ 0.0 }{
 
+		AFEConfig::AFEConfigState configState;
+		std::string voicespot_model = configState.isConfigurationEnable("VoiceSpotModel", "HeyNXP_en-US_1.bin");
+		std::string voicespot_params = configState.isConfigurationEnable("VoiceSpotParams", "HeyNXP_1_params.bin");
+		std::string voicespot_model_path = "/unit_tests/nxp-afe/" + voicespot_model;
+		std::string voicespot_params_path = "/unit_tests/nxp-afe/" + voicespot_params;
 		//initialize the queue attributes
 		attr.mq_flags = 0;
 		attr.mq_maxmsg = 10;
@@ -42,8 +48,8 @@ namespace SignalProcessor {
 		printf("rdspVoiceSpot_CreateInstance: voicespot_status = %d\n", (int32_t)voicespot_status);
 
 		//Load VoiceSpot keyword model
-		rdsp_import_voicespot_model("/unit_tests/nxp-afe/HeyNXP_en-US_1.bin", &model_blob, &model_blob_size);
-		printf("VoiceSpot model: HeyNXP_en-US_1.bin\r\n");
+		rdsp_import_voicespot_model(voicespot_model_path.c_str(), &model_blob, &model_blob_size);
+		printf("VoiceSpot model: %s\r\n", voicespot_model.c_str());
 
 		//Check the integrity of the model
 		if (rdspVoiceSpot_CheckModelIntegrity(model_blob_size, model_blob) != RDSP_VOICESPOT_OK) {
@@ -60,8 +66,7 @@ namespace SignalProcessor {
 		printf("rdspVoiceSpot_EnableAdaptiveThreshold: voicespot_status = %d\n", voicespot_status);
 
 		//Set VoiceSpot parameters
-		char* voiceSpotParams = (char*) "/unit_tests/nxp-afe/HeyNXP_1_params.bin";
-		voicespot_status = rdsp_set_voicespot_params(voicespot_control, voicespot_handle, voiceSpotParams);
+		voicespot_status = rdsp_set_voicespot_params(voicespot_control, voicespot_handle, voicespot_params_path.c_str());
 
 		//Retrieve VoiceSpot configuration
 		rdspVoiceSpot_GetLibVersion(voicespot_control, &voicespot_version);
@@ -86,13 +91,13 @@ namespace SignalProcessor {
 			printf("rdspVoiceSpot_Process: voicespot_status = %d\n", (int32_t)voicespot_status);
 			return -1;
 		}
-		
+
 		bool notified = false;
 		int32_t framesize_out = VOICESEEKER_OUT_NHOP;
 
 		//Check for trigger
 		int32_t score_index_trigger = rdspVoiceSpot_CheckIfTriggered(voicespot_control, voicespot_handle, scores, enable_triggering, event_thresholds, RDSP_PROCESSING_LEVEL__FULL);
-		
+
 		if (score_index_trigger >= 0) {
 			num_triggers++;
 			int32_t keyword_start_offset_samples = -1;

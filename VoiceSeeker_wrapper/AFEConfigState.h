@@ -24,9 +24,11 @@ namespace AFEConfig
 
 			int isConfigurationEnable(const string config, int defaultState) const;
 			mic_xyz isConfigurationEnable(const string config, mic_xyz defaultState) const;
+			string isConfigurationEnable(const string config, string defaultState) const;
 		private:
 			string ConfigIni;
 			map<string, int> ConfigMap;
 			map<string, mic_xyz> ConfigXYZ;
+			map<string, string> ConfigStr;
 	};
 }

@@ -25,6 +25,7 @@ namespace AFEConfig
 				auto delimiterPos = line.find("=");
 				auto key = line.substr(0, delimiterPos);
 				auto value = line.substr(delimiterPos + 1);
+				bool isNum = true;
 				//mic xyz
 				if ((delimiterPos = value.find(',')) != string::npos)
 				{
@@ -36,8 +37,22 @@ namespace AFEConfig
 					ConfigXYZ.insert(std::pair<string,mic_xyz>(key, mic));
 					continue;
 				}
+				else
+				{
 
-				ConfigMap.insert(std::pair<string,int>(key, atoi(value.c_str())));
+					for (int i = 0; i < value.length(); i++)
+					{
+						if (value[i] < '0' | value[i] > '9')
+						{
+							isNum = false;
+							break;
+						}
+					}
+				}
+				if (isNum)
+					ConfigMap.insert(std::pair<string,int>(key, atoi(value.c_str())));
+				else
+					ConfigStr.insert(std::pair<string,string>(key, value));
 			}
 		}
 		else
@@ -67,6 +82,18 @@ namespace AFEConfig
 		mic_xyz value;
 		try{
 			value = ConfigXYZ.at(config);
+		} catch (const std::out_of_range&)
+		{
+			value = defaultState;
+		}
+		return value;
+	}
+
+	string AFEConfigState::isConfigurationEnable(const string config, string defaultState) const
+	{
+		string value;
+		try{
+			value = ConfigStr.at(config);
 		} catch (const std::out_of_range&)
 		{
 			value = defaultState;
