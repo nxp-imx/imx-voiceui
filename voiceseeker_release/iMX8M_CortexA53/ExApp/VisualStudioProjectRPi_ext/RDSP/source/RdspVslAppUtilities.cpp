@@ -50,7 +50,7 @@ void rdsp_import_voicespot_model(const char* Afilename, uint8_t** Amodel, uint32
 	*Amodel_size = fileLen;
 }
 
-int32_t rdsp_set_voicespot_params(rdsp_voicespot_control* Avoicespot_control, int32_t Avoicespot_handle, char* Avoicespot_params) {
+int32_t rdsp_set_voicespot_params(rdsp_voicespot_control* Avoicespot_control, int32_t Avoicespot_handle, const char* Avoicespot_params) {
 	// Set up parameters using a parameter blob
 	if (Avoicespot_params != NULL) {
 		FILE* fileptr = fopen(Avoicespot_params, "rb"); // Open the file in binary mode
