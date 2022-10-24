@@ -405,12 +405,12 @@ namespace SignalProcessor {
 		this->delaySamples = configState.isConfigurationEnable("RefSignalDelay", delaySamples);
 		this->debugEnable = (configState.isConfigurationEnable("DebugEnable", 0) == 1)? true : false;
 		/*
-			mic0 = 17.5, 0.0, 0.0
-			mic1 = 0.0, 22.5, 0.0
-			mic2 = -17.5, 0.0, 0.0
-			mic3 = 0.0, -22.5, 0.0
+			mic0 = 35.0, 15.15, 0.0
+			mic1 = 17.5, -15.15, 0.0
+			mic2 = -17.5, -15.15, 0.0
+			mic3 = -35.0, 15.15, 0.0
 		*/
-		mic_xyz micDefaultState[4] = {{17.5, 0.0, 0.0}, {0.0, 22.5, 0.0}, {-17.5, 0.0, 0.0}, {0.0, -22.5, 0.0}};
+		mic_xyz micDefaultState[4] = {{35.0, 15.15, 0.0}, {17.5, -15.15, 0.0}, {-17.5, -15.15, 0.0}, {-35.0, 15.15, 0.0}};
 		this->mic[0] = configState.isConfigurationEnable("mic0", micDefaultState[0]);
 		this->mic[1] = configState.isConfigurationEnable("mic1", micDefaultState[1]);
 		this->mic[2] = configState.isConfigurationEnable("mic2", micDefaultState[2]);
