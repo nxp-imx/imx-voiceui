@@ -28,10 +28,12 @@ namespace SignalProcessor {
 		VIT_ControlParams_st      VITControlParams;                         // VIT control parameters structure
 		PL_MemoryTable_st         VITMemoryTable;                           // VIT memory table descriptor
 		PL_INT8*		pMemory[PL_NR_MEMORY_REGIONS];		// Pointers to dynamically allocated memory
+		const PL_UINT8            *VIT_Model = VIT_Model_en;
 
 		AFEConfig::AFEConfigState configState;
 		this->VoiceSpotEnable = (configState.isConfigurationEnable("VoiceSpotDisable", 0) == 1)? false : true;
 		this->VITWakeWordEnable = (configState.isConfigurationEnable("VITWakeWordEnable", 0) == 1)? true : false;
+		std::string VIT_Model_Setting = configState.isConfigurationEnable("VITLanguage", "English");
 		if (this->VoiceSpotEnable && this->VITWakeWordEnable) {
 			printf("VIT Configuration error: VoiceSpot and VIT WakeWord detection can't work together!\n");
 			exit(-1);
@@ -40,7 +42,17 @@ namespace SignalProcessor {
 		/*
 		 *   VIT Set Model : register the Model in VIT
 		 */
-		Status = VIT_SetModel(VIT_Model_en, MODEL_LOCATION);
+		if (VIT_Model_Setting == "Mandarin") {
+			VIT_Model = VIT_Model_cn;
+		}
+		else if (VIT_Model_Setting == "English") {
+			VIT_Model = VIT_Model_en;
+		}
+		else {
+			printf("Warning: Unknown VIT model! Using English by default!\n");
+			VIT_Model = VIT_Model_en;
+		}
+		Status = VIT_SetModel(VIT_Model, MODEL_LOCATION);
 		if (Status != VIT_SUCCESS)
 		{
 			printf("VIT_SetModel error : %d\n", Status);

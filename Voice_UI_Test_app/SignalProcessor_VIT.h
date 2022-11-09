@@ -11,6 +11,7 @@
 #include "PL_platformTypes_CortexA.h"
 #include "VIT.h"
 #include "VIT_Model_en.h"
+#include "VIT_Model_cn.h"
 
 #define MODEL_LOCATION              VIT_MODEL_IN_ROM
 #define DEVICE_ID                   VIT_IMX8MA53
