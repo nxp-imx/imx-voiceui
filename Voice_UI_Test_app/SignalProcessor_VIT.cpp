@@ -31,9 +31,23 @@ namespace SignalProcessor {
 		const PL_UINT8            *VIT_Model = VIT_Model_en;
 
 		AFEConfig::AFEConfigState configState;
-		this->VoiceSpotEnable = (configState.isConfigurationEnable("VoiceSpotDisable", 0) == 1)? false : true;
-		this->VITWakeWordEnable = (configState.isConfigurationEnable("VITWakeWordEnable", 0) == 1)? true : false;
+		std::string WakeWordEngine = configState.isConfigurationEnable("WakeWordEngine", "VoiceSpot");
 		std::string VIT_Model_Setting = configState.isConfigurationEnable("VITLanguage", "English");
+
+		if (WakeWordEngine == "VoiceSpot") {
+			this->VoiceSpotEnable = true;
+			this->VITWakeWordEnable = false;
+		}
+		else if (WakeWordEngine == "VIT") {
+			this->VoiceSpotEnable = false;
+			this->VITWakeWordEnable = true;
+		}
+		else {
+			printf("Warning: Unknown wake word detection engine, Using VoiceSpot by default!\n");
+			this->VoiceSpotEnable = true;
+			this->VITWakeWordEnable = false;
+		}
+
 		if (this->VoiceSpotEnable && this->VITWakeWordEnable) {
 			printf("VIT Configuration error: VoiceSpot and VIT WakeWord detection can't work together!\n");
 			exit(-1);
@@ -254,7 +268,7 @@ namespace SignalProcessor {
 		}
 	}
 
-	bool SignalProcessor_VIT::VIT_Process_Phase(VIT_Handle_t VITHandle, int16_t* frame_data, int16_t* pCmdId) {
+	bool SignalProcessor_VIT::VIT_Process_Phase(VIT_Handle_t VITHandle, int16_t* frame_data, int16_t* pCmdId, int *start_offset) {
 		VIT_ReturnStatus_en       Status;                                   // Status of the function
 		VIT_DetectionStatus_en    VIT_DetectionResults = VIT_NO_DETECTION;  // VIT detection result
 
@@ -287,8 +301,10 @@ namespace SignalProcessor {
 				// Check first if WW string is present
 				if (wakeWord.pName != PL_NULL)
 				{
-					printf(" %s\n", wakeWord.pName);
+					printf(" %s", wakeWord.pName);
 				}
+				*start_offset = wakeWord.StartOffset;
+				printf(" StartOffset %d\n", *start_offset);
 				return true;
 			}
 		}

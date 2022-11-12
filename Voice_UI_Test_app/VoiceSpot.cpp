@@ -115,7 +115,7 @@ int match(char *src, int src_len, queue* q, int *index) {
 *
 * @return true if VIT has detection
 */
-static bool VoiceSpotToVITProcess(SignalProcessor_VIT &VIT, void *buffer, rdsp_buffer *vit_frame_buf, int vit_frame_size) {
+static bool VoiceSpotToVITProcess(SignalProcessor_VIT &VIT, void *buffer, rdsp_buffer *vit_frame_buf, int vit_frame_size, int *start_offset) {
 	/* Since the frame size is different between VoiceSpot and VIT, a frame buffer is needed for VIT input audio */
 	int16_t vit_frame_buffer_lin[VOICESEEKER_OUT_NHOP];
 	float* frame_buffer_float = (float *)buffer;
@@ -130,7 +130,7 @@ static bool VoiceSpotToVITProcess(SignalProcessor_VIT &VIT, void *buffer, rdsp_b
 		RdspBuffer_ReadInputBlocks(vit_frame_buf, 0, vit_frame_size, (uint8_t*)vit_frame_buffer_lin);
 
 		/* Run VIT processing */
-		command_found = VIT.VIT_Process_Phase(VIT.VIT_Handle, vit_frame_buffer_lin, &cmd_id);
+		command_found = VIT.VIT_Process_Phase(VIT.VIT_Handle, vit_frame_buffer_lin, &cmd_id, start_offset);
 		/* VIT command recognition phase is finalized */
 		/* command_found triggered when targeted Voice command is recognized or VIT detection timeout is reached */
 		if (command_found) {
@@ -150,7 +150,7 @@ int main(int argc, char *argv[]) {
 	int32_t keyword_start_offset_samples;
 	bool wakewordnotify = false;
 	bool micSamplesReady = false;
-	bool voice_cmd_detect = false;
+	bool voice_ww_detect = false;
 
 	struct streamSettings captureOutputSettings =
 	{
@@ -240,15 +240,6 @@ int main(int argc, char *argv[]) {
 		rdsp_pcm_to_float(tmp_buf, &float_buffer, VOICESEEKER_OUT_NHOP, 1, sampleSize);
 		tmp_pos = 0;
 
-		if (VIT.isVITWakeWordEnable()) {
-			if (VIT.isVoiceSpotEnable()) {
-				printf("Disable voicespot if using VIT wakeword detection\n");
-				break;
-			}
-			bool VIT_Result = VoiceSpotToVITProcess(VIT, float_buffer, &vit_frame_buf, vit_frame_size);
-			continue;
-		}
-
 		bytes_read = mq_receive(mqVslOut, (char*)buffer, VSLOUTBUFFERSIZE, NULL);
 		bytes_read = mq_receive(mqIter, (char*)&iterations, sizeof(int32_t), NULL);
 		bytes_read = mq_receive(mqTrigg, (char*)&enable_triggering, sizeof(int32_t), NULL);
@@ -273,24 +264,29 @@ int main(int argc, char *argv[]) {
 		}
 
 		keyword_start_offset_samples = 0;
-		if (!voice_cmd_detect){
+		if (VIT.isVITWakeWordEnable()) {
+			if (VIT.isVoiceSpotEnable()) {
+				printf("Disable voicespot if using VIT wakeword detection\n");
+				break;
+			}
+			bool VIT_Result = VoiceSpotToVITProcess(VIT, buffer, &vit_frame_buf, vit_frame_size, &keyword_start_offset_samples);
+		}
+		else if (!voice_ww_detect) {
 			keyword_start_offset_samples = VoiceSpot.voiceSpot_process(buffer, wakewordnotify, iterations, enable_triggering);
 			if (keyword_start_offset_samples){
-				keyword_start_offset_samples += frameoffset/sampleSize;
-				voice_cmd_detect = true;
+				voice_ww_detect = true;
 				vit_frame_count = 3* 80;
-				// Reset VIT frame buffer
-				RdspBuffer_Reset(&vit_frame_buf);
 			}
 		}
 
+		keyword_start_offset_samples += frameoffset / sampleSize;
 		CHECK(0 <= mq_send(mqOffset, (char*)&keyword_start_offset_samples, sizeof(int32_t), 0));
 
-		if (voice_cmd_detect) {
-			voice_cmd_detect = !VoiceSpotToVITProcess(VIT, buffer, &vit_frame_buf, vit_frame_size);
+		if (voice_ww_detect) {
+			voice_ww_detect = !VoiceSpotToVITProcess(VIT, buffer, &vit_frame_buf, vit_frame_size, &keyword_start_offset_samples);
 			vit_frame_count--;
 			if (!vit_frame_count)
-				voice_cmd_detect = false;
+				voice_ww_detect = false;
 		}
 	}
 

@@ -85,7 +85,7 @@ namespace SignalProcessor {
 		int32_t _inputChannelsCount; //Selected input channels count
 		int32_t _referenceChannelsCount; //Selected reference channels count
 		int32_t _channel2output; //Input channel selected as output. Must be in range of _inputChannelsCount indexed from 0 to (_inputChannelsCount - 1)
-		bool _voicespot;
+		bool _WWDetection;
 		int32_t framesize_in;									//Read only variable from vsl_config.framesize_in
 		int32_t framesize_out;
 
