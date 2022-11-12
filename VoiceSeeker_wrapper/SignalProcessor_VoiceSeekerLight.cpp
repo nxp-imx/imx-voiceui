@@ -328,7 +328,7 @@ namespace SignalProcessor {
 				}
 
 				pcleanMicBuffer += (VOICESEEKER_OUT_NHOP * this->_sampleSize);
-				if (this->_voicespot) {
+				if (this->_WWDetection) {
 					sendBufferToWakeWordEngine(vsl_out, VOICESEEKER_OUT_NHOP * sizeof(float), iteration, enable_triggering);
 					int32_t keyword_start_offset_samples = getKeyWordOffsetFromWakeWordEngine();
 					if (keyword_start_offset_samples) {
@@ -401,7 +401,7 @@ namespace SignalProcessor {
 		this->_sampleSize = snd_pcm_format_size(this->_sampleFormat, 1); //Derive sample size from sample format
 
 		AFEConfigState configState;
-		this->_voicespot = (configState.isConfigurationEnable("VoiceSpotDisable", 0) == 1)? false : true;
+		this->_WWDetection = (configState.isConfigurationEnable("WWDectionDisable", 0) == 1)? false : true;
 		this->delaySamples = configState.isConfigurationEnable("RefSignalDelay", delaySamples);
 		this->debugEnable = (configState.isConfigurationEnable("DebugEnable", 0) == 1)? true : false;
 		/*
@@ -419,7 +419,7 @@ namespace SignalProcessor {
 		{
 			std::cout << "mic" << i << " xyz: (" << mic[i].x << ", " << mic[i].y << ", " << mic[i].z << ")" << std::endl;
 		}
-		std::cout << "delayValue " << this->delaySamples << " debugValue " << this->debugEnable << " VoiceSpot " << this->_voicespot
+		std::cout << "delayValue " << this->delaySamples << " debugValue " << this->debugEnable << " WakeWord Detection " << this->_WWDetection
 			<< std::endl;
 	}
 
