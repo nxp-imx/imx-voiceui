@@ -1,8 +1,8 @@
 NXP Software Content Register
 
-Release Name : VIT_v4.7.4
+Release Name : VIT_v4.7.5
 Description: Cortex-A Voice Intelligent Technology library
-Version: 4.7.4
+Version: 4.7.5
 
 Outgoing License : LA_OPT_NXP_Software_License - Additional Distribution License granted, license in Section 2.3 applies
 License file : LICENSE.txt

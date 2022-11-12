@@ -7,10 +7,8 @@
 #include "VIT_helper.h"
 #include <stdlib.h>
 #include <alsa/asoundlib.h>
-//  use for leakage detection
+
 static PL_INT8    *pMemory[PL_NR_MEMORY_REGIONS];
-static PL_INT8    *pMemoryBefore[PL_NR_MEMORY_REGIONS];
-static PL_INT8    *pMemoryAfter[PL_NR_MEMORY_REGIONS];
 
 void VIT_SetupMemoryRegion(PL_MemoryTable_st *memorytable)
 {
@@ -25,17 +23,11 @@ void VIT_SetupMemoryRegion(PL_MemoryTable_st *memorytable)
 
     if (memorytable->Region[i].Size != 0)
     {
-      // reserve memory space for Size + MEMORY_LEAK_SIZE
+      // reserve memory space for Size
       pMemory[i] = malloc(memorytable->Region[i].Size);
-      // Place the memory space pointer used by the code in
-      // the midle of the memory region reserved
       memorytable->Region[i].pBaseAddress =
         (void *)(pMemory[i]);
 
-      // fill the unused memory with 0x55 value for leakage detection
-      pMemoryBefore[i] = (PL_INT8 *)pMemory[i];
-      pMemoryAfter[i] = (PL_INT8 *)memorytable->Region[i].pBaseAddress +
-        memorytable->Region[i].Size;
       INFO(" Memory region address 0x%p\n",
           memorytable->Region[i].pBaseAddress);
     }
