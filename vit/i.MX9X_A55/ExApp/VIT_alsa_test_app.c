@@ -21,6 +21,8 @@
 #include "VIT_Model_tr.h"
 #include "VIT_Model_de.h"
 #include "VIT_Model_es.h"
+#include "VIT_Model_ja.h"
+#include "VIT_Model_ko.h"
 #endif
 
 #include <stdio.h>
@@ -226,8 +228,6 @@ int main(int argc, char *argv[])
   };
   const PL_UINT8            *VIT_Model = VIT_Model_en;
   size_t model_size = sizeof(VIT_Model_en);
-  int                       dist1 = 0;
-  int                       dist2 = 0;
   VIT_DetectionStatus_en    VIT_DetectionResults = VIT_NO_DETECTION;
 
   if (language != NULL) {
@@ -256,6 +256,16 @@ int main(int argc, char *argv[])
     {
       VIT_Model = VIT_Model_es;
       model_size = sizeof(VIT_Model_es);
+    }
+    else if (strcasecmp(language, "JAPANESE") == 0)
+    {
+      VIT_Model = VIT_Model_ja;
+      model_size = sizeof(VIT_Model_ja);
+    }
+    else if (strcasecmp(language, "KOREAN") == 0)
+    {
+      VIT_Model = VIT_Model_ko;
+      model_size = sizeof(VIT_Model_ko);
     }
 #endif
     else {

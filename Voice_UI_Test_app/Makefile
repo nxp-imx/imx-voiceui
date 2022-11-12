@@ -23,9 +23,9 @@ INCLUDES = -I$(INC_DIR1) -I$(INC_DIR2) -I$(INC_DIR3) -I$(INC_DIR4) -I$(INC_DIR5)
 CPPFLAGS += -O3 -DNDEBUG -DRDSP_DISABLE_FILEIO -Wno-format-security
 
 ifeq ($(BUILD_ARCH),CortexA55)
-	LIBRARY = $(SRC_DIR5)/Lib/librdsp_libvoicespotRPi.a $(INC_DIR1)/aarch64/libNE10.a $(INC_DIR9)/libVIT_iMX9X_A55_v4.7.3_EAR.a
+	LIBRARY = $(SRC_DIR5)/Lib/librdsp_libvoicespotRPi.a $(INC_DIR1)/aarch64/libNE10.a $(INC_DIR9)/libVIT_iMX9X_A55_v4.7.5.a
 else
-	LIBRARY = $(SRC_DIR1)/Lib/librdsp_libvoicespotRPi.a $(INC_DIR1)/aarch64/libNE10.a $(INC_DIR7)/libVIT_iMX8M_A53_v4.7.3_EAR.a
+	LIBRARY = $(SRC_DIR1)/Lib/librdsp_libvoicespotRPi.a $(INC_DIR1)/aarch64/libNE10.a $(INC_DIR7)/libVIT_iMX8M_A53_v4.7.5.a
 endif
 
 CPP_OBJS  = $(SRC_DIR3)/VoiceSpot.o \
