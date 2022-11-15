@@ -4,7 +4,7 @@ Release Name : VIT_v4.7.5
 Description: Cortex-A Voice Intelligent Technology library
 Version: 4.7.5
 
-Outgoing License : LA_OPT_NXP_Software_License - Additional Distribution License granted, license in Section 2.3 applies
+Outgoing License : LA_OPT_NXP_Software_License v39 August 2022 - Additional distribution license granted - Section 2.3 applies
 License file : LICENSE.txt
 Author: NXP - VATEC
 Format: Precompiled libraries, header files

@@ -1,34 +1,36 @@
 NXP Software Content Register
 
-Release - VoiceSeekerLight_v0.2.10
+Release - VoiceSeekerLight_v0.6.0
 
-Outgoing License: LA_OPT_NXP_Software_License v33 January 2022 - Additional distribution license granted - Section 2.3 applies
+Outgoing License: LA_OPT_NXP_Software_License v39 August 2022 - Additional distribution license granted - Section 2.3 applies
 License File:     license.txt
 
-Release tag: v0.2.10
+Release tag: v0.6.0
 
 --------------------------------------------
 
-Package:                     	Ne10
-Version:                     	1.2.1
-Outgoing License:            	BSD 3-Clause
-License File:                	./licenses/BSD-Ne10.txt
-Package Category:            	library
-Type of Content:             	object code
-Description and comments:    	Used for ARM Cortex-A accelerated math.
-Release Location:            	./iMX8M_CortexA53/Lib/libVoiceSeekerLightRPi_noAEC.a
-Origin:                      	https://github.com/projectNe10/Ne10
+Package:                    Ne10
+Version:                    1.2.1
+Outgoing License:           BSD 3-Clause
+License File:               ./licenses/BSD-Ne10.txt
+Package Category:           library
+Type of Content:            object code
+Description and comments:   Used for ARM Cortex-A accelerated math.
+Release Location:           ./iMX8M_CortexA53/lib/libVoiceSeekerLight_noAEC.a
+                            ./iMX93_CortexA55/lib/libVoiceSeekerLight_noAEC.a
+Origin:                     https://github.com/projectNe10/Ne10
 
 --------------------------------------------
 
-Package:                     	pugixml
-Version:                     	1.7
-Outgoing License:            	MIT
-License File:                	./licenses/MIT-pugixml.txt
-Package Category:            	library
-Type of Content:             	object code
-Description and comments:    	Used for parsing XML files.
-Release Location:            	./iMX8M_CortexA53/Lib/libVoiceSeekerLightRPi_noAEC.a
-Origin:                      	https://github.com/zeux/pugixml
+Package:                    pugixml
+Version:                    1.7
+Outgoing License:           MIT
+License File:               ./licenses/MIT-pugixml.txt
+Package Category:           library
+Type of Content:            object code
+Description and comments:   Used for parsing XML files.
+Release Location:           ./iMX8M_CortexA53/lib/libVoiceSeekerLight_noAEC.a
+                            ./iMX93_CortexA55/lib/libVoiceSeekerLight_noAEC.a
+Origin:                     https://github.com/zeux/pugixml
 
 --------------------------------------------
