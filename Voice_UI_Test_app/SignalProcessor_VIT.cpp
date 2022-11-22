@@ -6,6 +6,7 @@
 #include <string.h>
 #include "SignalProcessor_VIT.h"
 #include "AFEConfigState.h"
+#include "SignalProcessor_NotifyTrigger.h"
 
 namespace SignalProcessor {
 
@@ -15,6 +16,7 @@ namespace SignalProcessor {
 		/* Using VoiceSpot to detect wakeword as default */
 		this->VoiceSpotEnable = true;
 		this->VITWakeWordEnable = false;
+		this->last_notification = 0;
 	}
 
 	VIT_Handle_t SignalProcessor_VIT::VIT_open_model() {
@@ -268,12 +270,13 @@ namespace SignalProcessor {
 		}
 	}
 
-	bool SignalProcessor_VIT::VIT_Process_Phase(VIT_Handle_t VITHandle, int16_t* frame_data, int16_t* pCmdId, int *start_offset) {
+	bool SignalProcessor_VIT::VIT_Process_Phase(VIT_Handle_t VITHandle, int16_t* frame_data, int16_t* pCmdId, int *start_offset, bool notify, int32_t iteration) {
 		VIT_ReturnStatus_en       Status;                                   // Status of the function
 		VIT_DetectionStatus_en    VIT_DetectionResults = VIT_NO_DETECTION;  // VIT detection result
 
 		VIT_VoiceCommand_st       VoiceCommand;                             // Voice Command id
 		VIT_WakeWord_st         wakeWord;
+		bool notified = false;
 
 		Status = VIT_Process(VITHandle,
 				     (void *)frame_data,
@@ -296,6 +299,8 @@ namespace SignalProcessor {
 			}
 			else
 			{
+				if (notify)
+					SignalProcessor_notifyTrigger(notified, "WakeWordNotify", iteration, last_notification);
 				printf(" - Wakeword detected %d", wakeWord.Id);
 				// Retrieve WW Name: OPTIONAL
 				// Check first if WW string is present
