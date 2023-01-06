@@ -28,6 +28,7 @@ namespace SignalProcessor {
 		bool VoiceSpotEnable;
 		bool VITWakeWordEnable;
 		int32_t last_notification;
+		int32_t WWId;
 	public:
 		//Constructor
 		SignalProcessor_VIT();

@@ -4,6 +4,7 @@
  */
 
 #include <string.h>
+#include <stdio.h>
 #include "SignalProcessor_VIT.h"
 #include "AFEConfigState.h"
 #include "SignalProcessor_NotifyTrigger.h"
@@ -17,6 +18,7 @@ namespace SignalProcessor {
 		this->VoiceSpotEnable = true;
 		this->VITWakeWordEnable = false;
 		this->last_notification = 0;
+		this->WWId = 0;
 	}
 
 	VIT_Handle_t SignalProcessor_VIT::VIT_open_model() {
@@ -277,6 +279,7 @@ namespace SignalProcessor {
 		VIT_VoiceCommand_st       VoiceCommand;                             // Voice Command id
 		VIT_WakeWord_st         wakeWord;
 		bool notified = false;
+		char command[40];
 
 		Status = VIT_Process(VITHandle,
 				     (void *)frame_data,
@@ -300,7 +303,11 @@ namespace SignalProcessor {
 			else
 			{
 				if (notify)
-					SignalProcessor_notifyTrigger(notified, "WakeWordNotify", iteration, last_notification);
+				{
+					this->WWId = wakeWord.Id;
+					sprintf(command, "WakeWordNotify %d &", this->WWId);
+					SignalProcessor_notifyTrigger(notified, command, iteration, last_notification);
+				}
 				printf(" - Wakeword detected %d", wakeWord.Id);
 				// Retrieve WW Name: OPTIONAL
 				// Check first if WW string is present
@@ -324,6 +331,11 @@ namespace SignalProcessor {
 			}
 			else
 			{
+				if (notify)
+				{
+					sprintf(command, "WWCommandNotify %d %d &", this->WWId, VoiceCommand.Id);
+					SignalProcessor_notifyTrigger(notified, command, iteration, last_notification);
+				}
 				printf(" - Voice Command detected %d", VoiceCommand.Id);
 				*pCmdId = VoiceCommand.Id;
 
