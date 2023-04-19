@@ -66,6 +66,27 @@ namespace SignalProcessor {
 		else if (VIT_Model_Setting == "English") {
 			VIT_Model = VIT_Model_en;
 		}
+		else if (VIT_Model_Setting == "Turkish") {
+			VIT_Model = VIT_Model_tr;
+		}
+		else if (VIT_Model_Setting == "German") {
+			VIT_Model = VIT_Model_de;
+		}
+		else if (VIT_Model_Setting == "Spanish") {
+			VIT_Model = VIT_Model_es;
+		}
+		else if (VIT_Model_Setting == "Japanese") {
+			VIT_Model = VIT_Model_ja;
+		}
+		else if (VIT_Model_Setting == "Korean") {
+			VIT_Model = VIT_Model_ko;
+		}
+		else if (VIT_Model_Setting == "French") {
+			VIT_Model = VIT_Model_fr;
+		}
+		else if (VIT_Model_Setting == "Italian") {
+			VIT_Model = VIT_Model_it;
+		}
 		else {
 			printf("Warning: Unknown VIT model! Using English by default!\n");
 			VIT_Model = VIT_Model_en;

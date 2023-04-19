@@ -12,8 +12,15 @@
 #include "VIT.h"
 #include "VIT_Model_en.h"
 #include "VIT_Model_cn.h"
+#include "VIT_Model_tr.h"
+#include "VIT_Model_de.h"
+#include "VIT_Model_es.h"
+#include "VIT_Model_ja.h"
+#include "VIT_Model_ko.h"
+#include "VIT_Model_fr.h"
+#include "VIT_Model_it.h"
 
-#define MODEL_LOCATION              VIT_MODEL_IN_ROM
+#define MODEL_LOCATION              VIT_MODEL_IN_SLOW_MEM
 #define DEVICE_ID                   VIT_IMX8MA53
 #define VIT_OPERATING_MODE          VIT_VOICECMD_ENABLE	// Enabling Voice Commands only
 #define VIT_COMMAND_TIME_SPAN 		3.0 // in second

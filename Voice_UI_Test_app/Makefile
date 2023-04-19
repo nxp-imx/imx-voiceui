@@ -24,7 +24,7 @@ INC_DIR11  = ../VoiceSeeker_wrapper
 
 CPPFLAGS += -O3 -DNDEBUG -DRDSP_DISABLE_FILEIO -Wno-format-security
 
-LIBRARY = $(SRC_DIR5)/Lib/librdsp_libvoicespotRPi.a $(INC_DIR1)/aarch64/libNE10.a $(INC_DIR7)/libVIT_iMX$(BOARD)_v4.7.5.a
+LIBRARY = $(SRC_DIR5)/Lib/librdsp_libvoicespotRPi.a $(INC_DIR1)/aarch64/libNE10.a $(INC_DIR7)/libVIT_iMX$(BOARD)_v04_08_01.a
 
 INCLUDES = -I$(INC_DIR1) -I$(INC_DIR2) -I$(INC_DIR3) -I$(INC_DIR4) -I$(INC_DIR5) -I$(INC_DIR6) -I$(INC_DIR7) -I$(INC_DIR8) -I$(INC_DIR10) \
            -I$(INC_DIR11)

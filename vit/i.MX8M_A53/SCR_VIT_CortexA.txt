@@ -1,13 +1,26 @@
 NXP Software Content Register
 
-Release Name : VIT_v4.7.5
-Description: Cortex-A Voice Intelligent Technology library
-Version: 4.7.5
+Release Name : VIT_v4.8.1
+Description: Cortex-A53 Voice Intelligent Technology library
+Version: 4.8.1
 
-Outgoing License : LA_OPT_NXP_Software_License v39 August 2022 - Additional distribution license granted - Section 2.3 applies
+#### VIT package #######
+Outgoing License : LA_OPT_NXP_Software_License v44 March 2023 - Additional distribution license granted - Section 2.3 applies
 License file : LICENSE.txt
 Author: NXP - VATEC
-Format: Precompiled libraries, header files
+Format: VIT package
+
+
+#### Package content #######
+Outgoing License : LA_OPT_NXP_Software_License v44 March 2023 - Additional distribution license granted - Section 2.3 applies
+License file : LICENSE.txt
+Author: NXP - VATEC
+Format: Precompiled libraries
+
+Outgoing License : BSD-3
+License file : COPYING-BSD3.txt
+Author: NXP - VATEC
+Format: header files, application files
 
 Name: CMSIS
 Version: 5.6.0

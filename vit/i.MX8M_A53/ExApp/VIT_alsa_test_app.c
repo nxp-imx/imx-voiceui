@@ -17,13 +17,13 @@
 
 #include "VIT_Model_en.h"
 #include "VIT_Model_cn.h"
-#ifdef MULTI_LANGUAGES
 #include "VIT_Model_tr.h"
 #include "VIT_Model_de.h"
 #include "VIT_Model_es.h"
 #include "VIT_Model_ja.h"
 #include "VIT_Model_ko.h"
-#endif
+#include "VIT_Model_fr.h"
+#include "VIT_Model_it.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -48,6 +48,7 @@ __attribute__((unused)) static char const ident_vit_tests[] = "$Id: vit_tests "V
 #endif
 
 #define RECOVER_RETRY_COUNT 5
+#define DEFAULT_OUT_NAME "out.pcm"
 
 int g_verbose = 0;
 int g_time = 60; // one minute
@@ -86,6 +87,8 @@ static void display_usage() {
   LOG( "--show_commands, -s: language, ENGLISH, MANDARIN show available commands\n");
   LOG( "--verbose, -v: [0|1]: verbose\n");
   LOG( "--time, -t: [int]: detection duration in sec\n");
+  LOG( "--record, -r: record to file\n");
+  LOG( "--out, -o: [string]: output filename, default: %s\n", DEFAULT_OUT_NAME);
   LOG( "\n");
 }
 
@@ -100,6 +103,7 @@ int main(int argc, char *argv[])
 {
   char *alsa_device = NULL;
   char *language = NULL;
+  char *out_name = NULL;
   int show_commands = 0;
 #if defined(ARCH_AARCH64)
   char *imx_device = NULL;
@@ -108,10 +112,13 @@ int main(int argc, char *argv[])
   int device_id = -1;
 #endif
 
-  g_iterations = g_time * 100;
+  g_iterations = g_time * VIT_SAMPLE_RATE / g_buffer_frames;
   int c;
   int retry = RECOVER_RETRY_COUNT;
   const int silent = 0;
+  bool record = false;
+  int fd = 0;
+  int buffer_size = 0;
 
   while (1) {
     static struct option long_options[] = {
@@ -120,6 +127,8 @@ int main(int argc, char *argv[])
       {"verbose", required_argument, NULL, 'v'},
       {"show_commands", required_argument, NULL, 's'},
       {"time", required_argument, NULL, 't'},
+      {"record", no_argument, NULL, 'r'},
+      {"out", required_argument, NULL, 'o'},
 #if defined(ARCH_AARCH64)
       {"imx_device", optional_argument, NULL, 'i'},
 #endif
@@ -129,9 +138,9 @@ int main(int argc, char *argv[])
     int option_index = 0;
 
 #if defined(ARCH_AARCH64)
-    const char *optstring = "d:l:v:s:t:i:";
+    const char *optstring = "d:o:l:v:s:t:i:r";
 #else
-    const char *optstring = "d:l:v:s:t:";
+    const char *optstring = "d:o:l:v:s:t:r";
 #endif
     c = getopt_long(argc, argv,
                     optstring, long_options,
@@ -156,7 +165,13 @@ int main(int argc, char *argv[])
         break;
       case 't':
         g_time = strtol(optarg, NULL, 10);
-        g_iterations = g_time * 100;
+        g_iterations = g_time * VIT_SAMPLE_RATE / g_buffer_frames;
+        break;
+      case 'r':
+        record = true;
+        break;
+      case 'o':
+        out_name = optarg;
         break;
 #if defined(ARCH_AARCH64)
       case 'i':
@@ -241,7 +256,6 @@ int main(int argc, char *argv[])
       VIT_Model = VIT_Model_cn;
       model_size = sizeof(VIT_Model_cn);
     }
-#ifdef MULTI_LANGUAGES
     else if (strcasecmp(language, "TURKISH") == 0)
     {
       VIT_Model = VIT_Model_tr;
@@ -267,7 +281,16 @@ int main(int argc, char *argv[])
       VIT_Model = VIT_Model_ko;
       model_size = sizeof(VIT_Model_ko);
     }
-#endif
+    else if (strcasecmp(language, "FRENCH") == 0)
+    {
+      VIT_Model = VIT_Model_fr;
+      model_size = sizeof(VIT_Model_fr);
+    }
+    else if (strcasecmp(language, "ITALIAN") == 0)
+    {
+      VIT_Model = VIT_Model_it;
+      model_size = sizeof(VIT_Model_it);
+    }
     else {
       ERROR("Language '%s' not supported\n", language);
       return -1;
@@ -282,7 +305,7 @@ int main(int argc, char *argv[])
   /*
    * VIT Set Model
    */
-  status = VIT_SetModel(VIT_Model, VIT_MODEL_IN_ROM);
+  status = VIT_SetModel(VIT_Model, VIT_MODEL_IN_SLOW_MEM);
   CHECK(status, "VIT_SetModel");
 
   INFO("Model size %zu Bytes\n", model_size);
@@ -370,9 +393,22 @@ int main(int argc, char *argv[])
   PL_INT32 frame_cnt = 0;
 
   LOG("VIT example started!\n");
+  if (record)
+  {
+    if (!out_name)
+      out_name = DEFAULT_OUT_NAME;
+    remove(out_name);
+    if ((fd = open(out_name, O_WRONLY | O_CREAT, 0644)) == -1)
+    {
+      perror(out_name);
+      exit(EXIT_FAILURE);
+    }
+    LOG("\nRecording to %s\n\n", out_name);
+  }
 
-  buffer = malloc(g_buffer_frames * snd_pcm_format_width(g_format) / 8 );
-  LOG("Buffer allocated %d \n", (g_buffer_frames * snd_pcm_format_width(g_format) / 8 ));
+  buffer_size = g_buffer_frames * snd_pcm_format_width(g_format) / 8 ;
+  buffer = malloc(buffer_size);
+  LOG("Buffer allocated %d \n", buffer_size);
 
   for (int i = 0; i < g_iterations; ++i)
   {
@@ -394,6 +430,14 @@ int main(int argc, char *argv[])
         retry = RECOVER_RETRY_COUNT;
       }
 
+    }
+    if (record)
+    {
+      if (write(fd, buffer, buffer_size) != buffer_size)
+      {
+        perror(out_name);
+        exit(EXIT_FAILURE);
+      }
     }
 
     inputbuffer = (PL_INT16 *)buffer;
@@ -480,6 +524,12 @@ int main(int argc, char *argv[])
     }
 
     frame_cnt++;
+  }
+
+  if (fd > 1)
+  {
+    close(fd);
+    fd = -1;
   }
 
   free(buffer);
