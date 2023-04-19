@@ -176,8 +176,8 @@ int main(int argc, char *argv[]) {
 	int index;
 	int framenum = 0;
 	int frameoffset = 0;
-	/* VIT uses a frame size of 160 samples */
-	int vit_frame_size = 160;
+	/* VIT uses a frame size of 480 samples */
+	int vit_frame_size = VIT_SAMPLES_PER_30MS_FRAME;
 	int vit_frame_count = 3 * 80;  /* 3 seconds*/
 	rdsp_buffer vit_frame_buf;
 	VIT_Handle_t VITHandle = PL_NULL;
@@ -191,7 +191,9 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 
-	RdspBuffer_Create(&vit_frame_buf, 1, sizeof(int16_t), 2 * VOICESEEKER_OUT_NHOP);
+	/* vit_frame_buf stores vit input frames */
+	/* The size shoud be larger than input frames size */
+	RdspBuffer_Create(&vit_frame_buf, 1, sizeof(int16_t), 6 * VOICESEEKER_OUT_NHOP);
 	vit_frame_buf.assume_full = 0;
 
 	SignalProcessor_VoiceSpot VoiceSpot{};

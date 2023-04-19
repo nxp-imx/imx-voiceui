@@ -175,7 +175,7 @@ namespace SignalProcessor {
 			exit(-1);                                        // We can exit from here since memory is not allocated yet
 		}
 		VITInstParams.SampleRate_Hz = VIT_SAMPLE_RATE;
-		VITInstParams.SamplesPerFrame = VIT_SAMPLES_PER_10MS_FRAME;
+		VITInstParams.SamplesPerFrame = VIT_SAMPLES_PER_30MS_FRAME;
 		VITInstParams.NumberOfChannel = VIT_MAX_NUMBER_OF_CHANNEL;
 		VITInstParams.APIVersion = VIT_API_VERSION;
 #if defined CortexA55
