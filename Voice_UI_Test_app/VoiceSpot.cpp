@@ -22,7 +22,7 @@ using namespace AudioStreamWrapper;
 static const char * captureOutputName = "default";
 static const int captureOutputChannels = 1;
 static snd_pcm_format_t format = SND_PCM_FORMAT_S32_LE;
-static int period_size = 512;
+static int period_size = 128;
 static int buffer_size = period_size * 4;
 static int rate = 16000;
 
