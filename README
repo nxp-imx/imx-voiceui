@@ -1,8 +1,3 @@
-# RetuneDSP repository
-
-This repository includes the deliveries from RetuneDSP team, base on
-it, we generate the VoiceSpot application and VoiceSeeker library.
-
 # VoiceSeeker_wrapper
 
 The code in VoiceSeeker_wrapper folder is used for generating the
@@ -11,8 +6,24 @@ library used for AFE wrapper, please check the TODO.md in AFE.
 # Voice_UI_Test_app
 
 The code in Voice_UI_Test_app folder is used for generating the
-voice_ui_app which is known as an application that is VoiceSpot.
-This application uses the output of AFE for Voice detection.
+voice_ui_app which integrates VIT and VoiceSpot. This application
+uses the output of AFE for Voice detection.
+
+# vit
+
+The Voice Intelligent Technology(VIT) product release. It provides
+voice services aiming to wakeup and control the IOT devices.
+
+# voiceseeker_release (no AEC)
+
+VoiceSeeker Release without Acoustic Echo Cancellation
+(the no AEC build).
+
+# voicespot_release
+
+VoiceSpot release. It is a compact speech detection engine that can
+be used for applications such as wake word detection and small
+vocabulary command detection.
 
 # How to compile
 
