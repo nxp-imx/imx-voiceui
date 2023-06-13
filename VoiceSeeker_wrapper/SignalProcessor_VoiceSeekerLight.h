@@ -55,6 +55,12 @@
         } while (0) \
 
 namespace SignalProcessor {
+	typedef enum {
+		MACHINE_UNKNOWN = -1,
+		MACHINE_IMX8M,
+		MACHINE_IMX93EVK11,
+		MACHINE_IMX93QSB,
+	} MachineInfo;
 
 	class SignalProcessor_VoiceSeekerLight : public SignalProcessor::SignalProcessorImplementation {
 
@@ -117,6 +123,7 @@ namespace SignalProcessor {
 		int32_t num_delay_files;
 		// Specify mic geometry
 		AFEConfig::mic_xyz mic[4];
+		MachineInfo machine_info;
 
 		void setDefaultSettings(); //Sets the signal processors settings to default values.
 
@@ -151,6 +158,7 @@ namespace SignalProcessor {
 		const char* getSampleFormat() const override;
 
 		uint32_t getVersionNumber() const override;
+		MachineInfo getMachineInfo();
 	};
 
 }

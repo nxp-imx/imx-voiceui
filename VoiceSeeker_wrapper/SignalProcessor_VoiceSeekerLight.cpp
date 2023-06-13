@@ -411,10 +411,32 @@ namespace SignalProcessor {
 			mic3 = -35.0, 15.15, 0.0
 		*/
 		mic_xyz micDefaultState[4] = {{35.0, 15.15, 0.0}, {17.5, -15.15, 0.0}, {-17.5, -15.15, 0.0}, {-35.0, 15.15, 0.0}};
-		this->mic[0] = configState.isConfigurationEnable("mic0", micDefaultState[0]);
-		this->mic[1] = configState.isConfigurationEnable("mic1", micDefaultState[1]);
-		this->mic[2] = configState.isConfigurationEnable("mic2", micDefaultState[2]);
-		this->mic[3] = configState.isConfigurationEnable("mic3", micDefaultState[3]);
+		machine_info = getMachineInfo();
+		switch (machine_info) {
+		case MACHINE_IMX8M:
+			this->mic[0] = micDefaultState[0];
+			this->mic[1] = micDefaultState[1];
+			this->mic[2] = micDefaultState[2];
+			this->mic[3] = micDefaultState[3];
+			break;
+		case MACHINE_IMX93EVK11:
+			this->mic[0] = {59.5, -48.0, 0.0};
+			this->mic[1] = {-59.5, -52.5, 0.0};
+			this->mic[2] = {59.5, 48.0, 0.0};
+			this->mic[3] = {-59.5, 52.5, 0.0};
+			break;
+		case MACHINE_IMX93QSB:
+			this->mic[0] = {36.0, -36.0, 0};
+			this->mic[1] = {-36.0, -36.0, 0};
+			this->mic[2] = {36.0, 36.0, 0};
+			this->mic[3] = {-36.0, 36, 0};
+			break;
+		default:
+			this->mic[0] = configState.isConfigurationEnable("mic0", micDefaultState[0]);
+			this->mic[1] = configState.isConfigurationEnable("mic1", micDefaultState[1]);
+			this->mic[2] = configState.isConfigurationEnable("mic2", micDefaultState[2]);
+			this->mic[3] = configState.isConfigurationEnable("mic3", micDefaultState[3]);
+		}
 		for (int i = 0; i < 4; i++)
 		{
 			std::cout << "mic" << i << " xyz: (" << mic[i].x << ", " << mic[i].y << ", " << mic[i].z << ")" << std::endl;
@@ -528,6 +550,25 @@ namespace SignalProcessor {
 		return offset;
 	}
 
+	MachineInfo SignalProcessor_VoiceSeekerLight::getMachineInfo() {
+		MachineInfo machine = MACHINE_UNKNOWN;
+		char buf[64] = {0};
+		FILE* fileptr;
+
+		fileptr = fopen("/sys/devices/soc0/machine", "rb");
+		if (fileptr == NULL)
+			return MACHINE_UNKNOWN;
+		else if (fread(buf, sizeof(char), sizeof(buf), fileptr)) {
+			if (strstr(buf, "i.MX8M"))
+				machine = MACHINE_IMX8M;
+			else if (strstr(buf, "i.MX93 11"))
+				machine = MACHINE_IMX93EVK11;
+			else if (strstr(buf, "i.MX93 9"))
+				machine = MACHINE_IMX93QSB;
+		}
+		fclose(fileptr);
+		return machine;
+	}
 }
 
 /*
