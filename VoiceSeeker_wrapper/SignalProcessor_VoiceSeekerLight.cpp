@@ -300,8 +300,8 @@ namespace SignalProcessor {
 			if(this->debugEnable)
 			{
 				if (fid_delay_files_open) {
-					rdsp_wav_write_float(mic_in, vsl_constants.framesize_in, &fid_mic_delay);
-					rdsp_wav_write_float(ref_in, vsl_constants.framesize_in, &fid_ref_delay);
+					rdsp_wav_write_interleaved_int32((int32_t *)pnChannelMicBuffer, vsl_constants.framesize_in, &fid_mic_delay);
+					rdsp_wav_write_interleaved_int32((int32_t *)delayedRefBuffer, vsl_constants.framesize_in, &fid_ref_delay);
 				}
 			}
 
@@ -323,7 +323,7 @@ namespace SignalProcessor {
 				if(this->debugEnable)
 				{
 					if (fid_delay_files_open) {
-						rdsp_wav_write_float(&vsl_out, VOICESEEKER_OUT_NHOP, &fid_mic_out);
+						rdsp_wav_write_interleaved_int32((int32_t *)tmp_buf, VOICESEEKER_OUT_NHOP, &fid_mic_out);
 					}
 				}
 

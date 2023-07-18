@@ -97,6 +97,10 @@ RDSP_STATIC size_t rdsp_wav_read_float(float** Abuffer, uint32_t Anum_samples, r
 RDSP_STATIC rdsp_wav_file_t rdsp_wav_write_open(const char* Afilename, uint32_t Asample_rate, uint16_t Anum_channels, uint16_t Abit_depth, WaveFormat Aformat);
 RDSP_STATIC size_t rdsp_wav_write_int16(int16_t** Abuffer, uint32_t Anum_samples, rdsp_wav_file_t* Awav_file);
 RDSP_STATIC size_t rdsp_wav_write_int32(int32_t** Abuffer, uint32_t Anum_samples, rdsp_wav_file_t* Awav_file);
+RDSP_STATIC size_t rdsp_wav_write_interleaved_int32(
+    int32_t* interleaved_buffer,
+    uint32_t Anum_samples,
+    rdsp_wav_file_t* Awav_file);
 RDSP_STATIC size_t rdsp_wav_write_float(float** Abuffer, uint32_t Anum_samples, rdsp_wav_file_t* Awav_file);
 
 RDSP_STATIC void rdsp_wav_close(rdsp_wav_file_t* Awav_file);

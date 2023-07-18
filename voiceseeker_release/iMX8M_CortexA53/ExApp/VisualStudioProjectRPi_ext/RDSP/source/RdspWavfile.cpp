@@ -448,6 +448,27 @@ RDSP_STATIC size_t rdsp_wav_write_int32(int32_t** Abuffer, uint32_t Anum_samples
 	return write_count;
 }
 
+RDSP_STATIC size_t rdsp_wav_write_interleaved_int32(
+    int32_t* interleaved_buffer,
+    uint32_t Anum_samples,
+    rdsp_wav_file_t* Awav_file) {
+
+    uint32_t write_count = 0;
+    uint16_t* fmt = (uint16_t*)&Awav_file->fmt; // Cast as pointer to index into union
+    uint16_t num_channels = fmt[1]; // num_channels is located at fmt[1]
+
+    write_count = fwrite(
+        interleaved_buffer,
+        sizeof(int32_t),
+        num_channels * Anum_samples,
+        Awav_file->fid);
+
+    update_chunk_size(Anum_samples, Awav_file);
+
+    return write_count;
+}
+
+
 RDSP_STATIC size_t rdsp_wav_write_float(float** Abuffer, uint32_t Anum_samples, rdsp_wav_file_t* Awav_file) {
 	if (Anum_samples <= 0)
 		return 0;
