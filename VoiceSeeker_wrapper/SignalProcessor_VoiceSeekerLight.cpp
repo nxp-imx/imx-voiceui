@@ -107,7 +107,7 @@ namespace SignalProcessor {
 		RdspStatus voiceseeker_status = VoiceSeekerLight_Create(&vsl, &vsl_config);
 		if (voiceseeker_status != OK) {
 			printf("VoiceSeekerLight_Create: voiceseeker_status = %d\n", voiceseeker_status);
-			return;
+            throw -1;
 		}
 
 		VoiceSeekerLight_Init(&vsl);					//VoiceSeekerLight initialization
@@ -580,7 +580,15 @@ instance, which can be used to invoke the rest of functions defined in the imple
 extern "C"  /* !!!We need to define these functions as extern "C", so their names don't get mangeled and we can load them dynamically!!! */
 {
 	SignalProcessor::SignalProcessorImplementation* createProcessor() {
-		return new SignalProcessor::SignalProcessor_VoiceSeekerLight();
+        SignalProcessor::SignalProcessor_VoiceSeekerLight* vs;
+        try {
+		    vs =  new SignalProcessor::SignalProcessor_VoiceSeekerLight();
+        }
+        catch (int error) {
+            vs =  NULL;
+        }
+
+        return vs;
 	}
 
 	void destroyProcessor(SignalProcessor::SignalProcessorImplementation* processorHandle) {
