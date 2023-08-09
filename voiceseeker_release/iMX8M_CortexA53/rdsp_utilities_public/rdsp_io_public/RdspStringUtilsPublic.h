@@ -10,26 +10,32 @@
 * then you may not retain, install, activate or otherwise use the software.
 *
 */
-#ifndef MEMCHECK_H
-#define MEMCHECK_H
+#ifndef RDSP_STRING_UTILS_PUBLIC
+#define RDSP_STRING_UTILS_PUBLIC
 
 #include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
-void* memcheck_malloc_align(size_t size, int alignment, const char* file, int line, const char* function);
-void* memcheck_malloc(size_t size, const char* file, int line, const char* function);
-
-void memcheck_free_align(void *data);
-void memcheck_free(void* addr);
-
-void memcheck_check(void);
-
+#if SDK_DEBUGCONSOLE
+// Use FSL driver for MCUXpresso builds
+extern int DbgConsole_Printf(const char *formatString, ...);
+#define rdsp_printf(...) DbgConsole_Printf(__VA_ARGS__)
+#else
+// Use stdio
+#define rdsp_printf(...) printf(__VA_ARGS__)
+#endif
 
 #ifdef __cplusplus
 }
 #endif
-#endif // MEMCHECK_H
+
+#endif /* RDSP_STRING_UTILS_PUBLIC */
+
+

@@ -9,6 +9,7 @@ NXP Confidential. This software is owned or controlled by NXP and may only be us
 #define RDSP_PLATFORMS_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 #ifdef NXP_RT500_CM33
 #define RDSP_MATH_USES_POWERQUAD 1
@@ -29,18 +30,6 @@ NXP Confidential. This software is owned or controlled by NXP and may only be us
 #if defined(HIFI3) || defined(HIFI4) || defined(FUSIONDSP)
 #include "NatureDSP_Signal.h"
 #include "NatureDSP_types.h"
-#endif
-
-#if defined(HMD1A)
-#include "Biquad.h"
-#include "fr32_math.h"
-#include "fr32_utils.h"
-#include "fr32_xcc_ops.h"
-#include "TIE_defs.h"
-#include "TIE_include.h"
-#include "TIE_DSPInternal.h"
-#include "CoreLib.h"
-#include "FFT.h"
 #endif
 
 #ifdef __ARM_NEON

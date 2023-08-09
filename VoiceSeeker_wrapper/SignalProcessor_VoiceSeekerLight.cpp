@@ -121,7 +121,7 @@ namespace SignalProcessor {
 		*/
 
 		rdsp_voiceseekerlight_ver_struct_t vsl_version;
-		VoiceSeekerLight_GetLibVersion(&vsl, &vsl_version.major, &vsl_version.minor, &vsl_version.patch);
+		VoiceSeekerLight_GetLibVersion(&vsl, &vsl_version);
 		printf("VoiceSeekerLight_GetLibVersion: v%i.%i.%i\n", vsl_version.major, vsl_version.minor, vsl_version.patch);
 		VoiceSeekerLight_PrintConfig(&vsl); //Print VoiceSeekerLight configuration
 		VoiceSeekerLight_PrintMemOverview(&vsl); //Print VoiceSeekerLight memory overview

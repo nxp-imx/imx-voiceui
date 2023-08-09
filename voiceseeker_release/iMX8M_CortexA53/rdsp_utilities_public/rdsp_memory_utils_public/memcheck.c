@@ -38,17 +38,16 @@ typedef struct memcheck_node {
   const char *function;
 } memcheck_node_t;
 
-memcheck_node_t m_ctx[MAX_NODES];
+static memcheck_node_t m_ctx[MAX_NODES];
 
-
-void* memcheck_malloc_align(size_t size, int alignment, const char* file, int line, const char* function) {
+void* memcheck_malloc_align(size_t size, size_t alignment, const char* file, int line, const char* function) {
     void* p1; // original block
     void** p2;// aligned block
-    int offset = alignment - 1 + sizeof(void*);
-    if ((p1 = (void*) memcheck_malloc(size + offset, file, line, function)) == NULL ) {
+    size_t offset = alignment - 1 + sizeof(void*);
+    if ((p1 = memcheck_malloc(size + offset, file, line, function)) == NULL ) {
         return NULL;
     }
-    p2 = (void**) (((size_t) (p1) + offset) & ~(alignment - 1));
+    p2 = (void**)(((size_t)p1 + offset) & ~(alignment - 1));
     p2[-1] = p1;
     return p2;
 }
@@ -64,9 +63,9 @@ void* memcheck_malloc(size_t size, const char* file, int line, const char* funct
   static int is_initialized = 0;
 
   // Initialize the first time it is called
-  if (!is_initialized) {
+  if (is_initialized == 0) {
 	  for (i = 0; i < MAX_NODES; i++) {
-		  memset(&m_ctx[i], 0, sizeof(memcheck_node_t));
+		  (void)memset(&m_ctx[i], 0, sizeof(memcheck_node_t));
 	  }
 	  is_initialized = 1;
   }
@@ -84,8 +83,8 @@ void* memcheck_malloc(size_t size, const char* file, int line, const char* funct
 
 		char* current_pattern = addr;
 		for (r = 0; r < NUM_PATTERN_REPETITIONS; r++) {
-			memcpy(current_pattern, pattern, sizeof(pattern));
-			memcpy(current_pattern + NUM_PATTERN_REPETITIONS * sizeof(pattern) + size, pattern, sizeof(pattern));
+			(void)memcpy(current_pattern, pattern, sizeof(pattern));
+			(void)memcpy(current_pattern + NUM_PATTERN_REPETITIONS * sizeof(pattern) + size, pattern, sizeof(pattern));
 			current_pattern += sizeof(pattern);		// Increment to next pattern
 		}
 		m_ctx[i].addr = addr;
@@ -96,7 +95,7 @@ void* memcheck_malloc(size_t size, const char* file, int line, const char* funct
 		break;
     } else {
     	if (i == MAX_NODES - 1) {
-    		printf("No free memcheck nodes, increase MAX_NODES\n");
+    		(void)printf("No free memcheck nodes, increase MAX_NODES\n");
     		return NULL;
     	}
     }
@@ -122,6 +121,7 @@ void memcheck_free(void* addr) {
       m_ctx[i].line = -1;
       m_ctx[i].file = NULL;
       m_ctx[i].function = NULL;
+      break;
     }
   }
 }
@@ -144,11 +144,11 @@ void memcheck_check(void) {
 			current_pattern += sizeof(pattern);		// Increment to next pattern
 		}
 
-    	if (current_node_corrupt) {
+    	if (current_node_corrupt != 0) {
     		if (m_ctx[i].file != NULL && m_ctx[i].function != NULL) {
-				printf("Address %p, allocated at %s:%d:%s() is corrupted. ", m_ctx[i].addr, m_ctx[i].file, m_ctx[i].line, m_ctx[i].function);
+    			(void)printf("Address %p, allocated at %s:%d:%s() is corrupted. ", m_ctx[i].addr, m_ctx[i].file, m_ctx[i].line, m_ctx[i].function);
     		} else {
-    			printf("Address %p is corrupted. ", m_ctx[i].addr);
+    			(void)printf("Address %p is corrupted. ", m_ctx[i].addr);
     		}
       }
     }

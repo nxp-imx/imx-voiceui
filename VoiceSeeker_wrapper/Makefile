@@ -4,24 +4,24 @@ SRC_DIR1  = ../voiceseeker_release/iMX8M_CortexA53
 SRC_DIR2  = ../voiceseeker_release/iMX8M_CortexA53/ExApp/VisualStudioProjectRPi_ext/RDSP/source
 SRC_DIR3  = ./
 SRC_DIR4  = ../voiceseeker_release/iMX93_CortexA55
-SRC_DIR5  = ../voiceseeker_release/rdsp_utilities_public/rdsp_memory_utils_public
+SRC_DIR5  = ../voiceseeker_release/iMX8M_CortexA53/rdsp_utilities_public/rdsp_memory_utils_public
 
 INC_DIR1  = ../voiceseeker_release/iMX8M_CortexA53/ExApp/VisualStudioProjectRPi_ext/ne10
 INC_DIR2  = ../voiceseeker_release/iMX8M_CortexA53/ExApp/VisualStudioProjectRPi_ext/RDSP/include
 INC_DIR3  = ../voiceseeker_release/iMX8M_CortexA53/ExApp/VisualStudioProjectRPi_ext/RDSP/include/public
 INC_DIR4  = ../voiceseeker_release/iMX8M_CortexA53/ExApp/VisualStudioProjectRPi_ext/RDSP/source
 INC_DIR5  = ./
-INC_DIR6  = ../voiceseeker_release/rdsp_utilities_public/rdsp_memory_utils_public
-INC_DIR7  = ../voiceseeker_release/rdsp_utilities_public/include
+INC_DIR6  = ../voiceseeker_release/iMX8M_CortexA53/rdsp_utilities_public/rdsp_memory_utils_public
+INC_DIR7  = ../voiceseeker_release/iMX8M_CortexA53/rdsp_utilities_public/include
 
 INCLUDES = -I$(INC_DIR1) -I$(INC_DIR2) -I$(INC_DIR3) -I$(INC_DIR4) -I$(INC_DIR5) -I$(INC_DIR6) -I$(INC_DIR7)
 
 CPPFLAGS += -O3 -DNDEBUG -DRDSP_DISABLE_FILEIO -Wno-format-security
 
 ifeq ($(BUILD_ARCH),CortexA55)
-	LIBRARY = $(SRC_DIR4)/lib/libVoiceSeekerLightRPi_noAEC.a $(INC_DIR1)/aarch64/libNE10.a
+	LIBRARY = $(SRC_DIR4)/lib/libvoiceseeker_no_aec.a $(INC_DIR1)/aarch64/libNE10.a
 else
-	LIBRARY = $(SRC_DIR1)/Lib/libVoiceSeekerLightRPi_noAEC.a $(INC_DIR1)/aarch64/libNE10.a
+	LIBRARY = $(SRC_DIR1)/Lib/libvoiceseeker_no_aec.a $(INC_DIR1)/aarch64/libNE10.a
 endif
 
 CPP_OBJS  = $(SRC_DIR3)/SignalProcessor_VoiceSeekerLight.o \
