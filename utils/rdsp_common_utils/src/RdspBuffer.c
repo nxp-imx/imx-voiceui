@@ -7,7 +7,7 @@ Contact information: info@retune-dsp.com
                      www.retune-dsp.com
 */
 
-#include "rdsp_buffer.h"
+#include "RdspBuffer.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

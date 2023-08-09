@@ -1,2 +1,4 @@
 *.patch
 *.o
+**/build
+**/release

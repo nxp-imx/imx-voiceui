@@ -6,32 +6,29 @@ CPLUS_FLAGS =
 
 INSTALLDIR := ./release
 
-BUILD_ARCH = CortexA53
+BUILD_ARCH ?= CortexA53
 export BUILD_ARCH
 
 all: VOICESEEKER VOICESPOT
 
 VOICESEEKER: | $(INSTALLDIR)
-	echo "--- Build voiceseeker library ---"
-	make -C ./VoiceSeeker_wrapper
-	cp ./VoiceSeeker_wrapper/libvoiceseekerlight.so $(INSTALLDIR)/libvoiceseekerlight.so.2.0
-	cp ./VoiceSeeker_wrapper/Config.ini  $(INSTALLDIR)/
-	cp ./voicespot_release/models/NXP/HeyNXP_en-US_1.bin $(INSTALLDIR)/
-	cp ./voicespot_release/models/NXP/HeyNXP_1_params.bin $(INSTALLDIR)/
+	@echo "--- Build voiceseeker library ---"
+	make -C ./voiceseeker/
+	cp ./voiceseeker/build/$(BUILD_ARCH)/libvoiceseekerlight.so $(INSTALLDIR)/libvoiceseekerlight.so.2.0
+	cp ./voiceseeker/src/Config.ini $(INSTALLDIR)/
 
 VOICESPOT: | $(INSTALLDIR)
-	echo "--- Build voicespot app ---"
-	make -C ./Voice_UI_Test_app
-	cp ./Voice_UI_Test_app/voice_ui_app $(INSTALLDIR)/
+	@echo "--- Build voicespot app ---"
+	make -C ./voicespot
+	cp ./voicespot/build/$(BUILD_ARCH)/voice_ui_app $(INSTALLDIR)/
+	cp ./voicespot/platforms/models/NXP/HeyNXP_en-US_1.bin $(INSTALLDIR)/
+	cp ./voicespot/platforms/models/NXP/HeyNXP_1_params.bin $(INSTALLDIR)/
 
 $(INSTALLDIR) :
 	mkdir $@
 
 clean:
-	rm -f ./release/libvoiceseekerlight.so*
-	rm -f ./release/voice_ui_app
-	rm -f ./release/Config.ini
-	rm -f ./release/HeyNXP_en-US_1.bin
-	rm -f ./release/HeyNXP_1_params.bin
-	make -C ./VoiceSeeker_wrapper clean
-	make -C ./Voice_UI_Test_app clean
+	rm -rf ./release
+	make -C ./voiceseeker clean
+	make -C ./voicespot clean
+

@@ -21,7 +21,6 @@
 #include <mqueue.h>
 
 #include <RdspAppUtilities.h>
-#include <RdspVslAppUtilities.h>
 #include <RdspWavfile.h>
 #include <RdspCycleCounter.h>
 #include <AFEConfigState.h>

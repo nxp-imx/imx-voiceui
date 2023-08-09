@@ -9,7 +9,7 @@
 #include "RdspAppUtilities.h"
 #include "SignalProcessor_VoiceSpot.h"
 #include "SignalProcessor_VIT.h"
-#include "rdsp_buffer.h"
+#include "RdspBuffer.h"
 
 std::string commandUsageStr =
     "Invalid input arguments!\n" \
