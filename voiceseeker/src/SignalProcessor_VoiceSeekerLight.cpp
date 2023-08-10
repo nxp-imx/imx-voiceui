@@ -60,7 +60,7 @@ namespace SignalProcessor {
 		vsl.mem.FreePrivateDataSize = heap_req_bytes;
 
 		vsl_config.num_mics = this->_inputChannelsCount;
-		vsl_config.num_spks = this->_referenceChannelsCount;
+		vsl_config.num_spks = 0;
 		vsl_config.framesize_out = VOICESEEKER_OUT_NHOP;
 		vsl_config.buffer_length_sec = RDSP_BUFFER_LENGTH_SEC;
 		vsl_config.aec_filter_length_ms = RDSP_AEC_FILTER_LENGTH_MS;
