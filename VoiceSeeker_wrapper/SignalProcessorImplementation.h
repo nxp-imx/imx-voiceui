@@ -5,6 +5,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <cstdint>
 
 #ifndef __SignalProcessor__SignalProcessorImplementation_h__
 #define __SignalProcessor__SignalProcessorImplementation_h__
