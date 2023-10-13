@@ -247,7 +247,7 @@ namespace SignalProcessor {
 		VITControlParams.OperatingMode = VIT_OPERATING_MODE;
 		if (this->VITWakeWordEnable && !this->VoiceSpotEnable) {
 			printf("Using VIT for wakeword detection.\n");
-			VITControlParams.OperatingMode = VIT_ALL_MODULE_ENABLE;
+			VITControlParams.OperatingMode = (VIT_OperatingMode_en)(VIT_WAKEWORD_ENABLE | VIT_VOICECMD_ENABLE);
 		}
 
 		VITControlParams.Feature_LowRes = PL_FALSE;

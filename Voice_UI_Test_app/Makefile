@@ -1,7 +1,7 @@
 ifeq ($(BUILD_ARCH),CortexA55)
-	BOARD = 9X_A55
+	BOARD = 9_CortexA55
 else
-	BOARD = 8M_A53
+	BOARD = 8M_CortexA53
 endif
 
 SRC_DIR1  = ../voicespot_release/iMX8M_CortexA53
@@ -16,15 +16,15 @@ INC_DIR2  = ../voiceseeker_release/iMX8M_CortexA53/ExApp/VisualStudioProjectRPi_
 INC_DIR3  = ../voiceseeker_release/iMX8M_CortexA53/ExApp/VisualStudioProjectRPi_ext/RDSP/include/public
 INC_DIR4  = ../voiceseeker_release/iMX8M_CortexA53/ExApp/VisualStudioProjectRPi_ext/RDSP/source
 INC_DIR5  = ./AudioStream
-INC_DIR6  = ../vit/i.MX$(BOARD)/Lib/Inc
-INC_DIR7  = ../vit/i.MX$(BOARD)/Lib
+INC_DIR6  = ../vit/iMX$(BOARD)/lib/inc
+INC_DIR7  = ../vit/iMX$(BOARD)/lib
 INC_DIR8  = ../voiceseeker_release/rdsp_utilities_public/rdsp_memory_utils_public
 INC_DIR10  = ../voiceseeker_release/rdsp_utilities_public/include
 INC_DIR11  = ../VoiceSeeker_wrapper
 
 CPPFLAGS += -O3 -DNDEBUG -DRDSP_DISABLE_FILEIO -Wno-format-security
 
-LIBRARY = $(SRC_DIR5)/Lib/librdsp_libvoicespotRPi.a $(INC_DIR1)/aarch64/libNE10.a $(INC_DIR7)/libVIT_iMX$(BOARD)_v04_08_01.a
+LIBRARY = $(SRC_DIR5)/Lib/librdsp_libvoicespotRPi.a $(INC_DIR1)/aarch64/libNE10.a $(INC_DIR7)/libVIT_iMX$(BOARD)_v04_09_00_EngineeringRelease.a
 
 INCLUDES = -I$(INC_DIR1) -I$(INC_DIR2) -I$(INC_DIR3) -I$(INC_DIR4) -I$(INC_DIR5) -I$(INC_DIR6) -I$(INC_DIR7) -I$(INC_DIR8) -I$(INC_DIR10) \
            -I$(INC_DIR11)
