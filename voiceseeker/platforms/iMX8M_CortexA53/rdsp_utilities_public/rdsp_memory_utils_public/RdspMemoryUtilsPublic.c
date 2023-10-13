@@ -1,20 +1,30 @@
-/*Copyright 2021 Retune DSP 
-* Copyright 2022 NXP 
+/*Copyright 2021 Retune DSP
+* Copyright 2022-2023 NXP
 *
-* NXP Confidential. This software is owned or controlled by NXP 
-* and may only be used strictly in accordance with the applicable license terms.  
-* By expressly accepting such terms or by downloading, installing, 
-* activating and/or otherwise using the software, you are agreeing that you have read, 
-* and that you agree to comply with and are bound by, such license terms.  
-* If you do not agree to be bound by the applicable license terms, 
+* NXP Confidential. This software is owned or controlled by NXP
+* and may only be used strictly in accordance with the applicable license terms.
+* By expressly accepting such terms or by downloading, installing,
+* activating and/or otherwise using the software, you are agreeing that you have read,
+* and that you agree to comply with and are bound by, such license terms.
+* If you do not agree to be bound by the applicable license terms,
 * then you may not retain, install, activate or otherwise use the software.
 *
 */
 #include "RdspMemoryUtilsPublic.h"
 
+#ifdef _WIN32
+#define RDSP_MEMORY_UTILS_USES_STDLIB 1
+#else
 #define RDSP_MEMORY_UTILS_USES_STDLIB 0
+#endif
+
 #if RDSP_MEMORY_UTILS_USES_STDLIB
 #include <stdlib.h>
+#if _WIN32
+#define ALIGNED_MALLOC(size, align) _aligned_malloc(size, align);
+#else
+#define ALIGNED_MALLOC(size, align) aligned_malloc(align, size);
+#endif
 #endif
 
 #define RDSP_MEMORY_UTILS_USES_STRING 1
@@ -71,63 +81,71 @@ size_t rdsp_plugin_malloc_GetAllocatedBytes(void) {
 }
 
 void* rdsp_plugin_malloc(size_t Asize, MemAlign_t Aalign) {
-#if RDSP_ENABLE_MEMCHECK
-	void* p = memcheck_malloc_align(Asize, align, NULL, 0, NULL);
-	return p;
-#else
 	// Pointer to the start of the aligned memory section
-	uintptr_t pRet = (uintptr_t)NULL;
+	void* pRet = NULL;
+	size_t align = (size_t)Aalign; // Must cast enum to 32/64 bit int type
 
-	// Ensure pointer is aligned in case previous malloc had a different alignment
-	uintptr_t tmp = (uintptr_t)ext_mem_nextptr;
-	uintptr_t mem_start = (tmp + ((size_t)Aalign - 1)) & ~(uintptr_t)((size_t)Aalign - 1);
+#if RDSP_ENABLE_MEMCHECK
+	pRet = memcheck_malloc_align(Asize, align, NULL, 0, NULL);
+	return pRet;
+#else
 
-	// Compute total memory size including added alignment
-	size_t aligned_size = (Asize + (size_t)Aalign - 1) & ~((size_t)Aalign - 1);
-	uintptr_t mem_end = mem_start + aligned_size;
-	size_t mem_size = mem_end - (uintptr_t)ext_mem_nextptr;
 
-	/* For heap memory analysis */
+	// Ensure next pointer is aligned in case previous malloc had a different alignment
+	uintptr_t mem_next = (uintptr_t)ext_mem_nextptr; // Use uintptr_t for pointer arithmetic
+	uintptr_t mem_start_align = (mem_next + (align - 1)) & ~(align - 1);
+
+	// Compute memory size requested including added alignment
+	size_t aligned_size = (Asize + (align - 1)) & ~(align - 1);
+	uintptr_t mem_end_align = mem_start_align + aligned_size;
+
+	// Compute total memory size including aligned start/end
+	size_t mem_size = mem_end_align - mem_next;
+
+	// For heap memory analysis
 	if (extmem_analysis_mode_flag == 1) {
 		ext_mem_bytes_used += mem_size;
 		return (void*)0xFFFF;
 	}
 
-#if RDSP_MEMORY_UTILS_USES_STDLIB
-	pRet = malloc(aligned_size);
-#else
-	int32_t failed = 0;
 	// Only allocate if we have enough memory
 	if (ext_mem_bytes_left >= mem_size) {
-		pRet = mem_start;
-		ext_mem_nextptr = (void*)mem_end;
-		ext_mem_bytes_left -= mem_size;
-		ext_mem_bytes_used += mem_size;
+#if RDSP_MEMORY_UTILS_USES_STDLIB
+		mem_start_align = ALIGNED_MALLOC(mem_size, align);
+#endif // RDSP_MEMORY_UTILS_USES_STDLIB==1
 
-		// Check for alignment
-		if ((pRet % (size_t)Aalign) != 0) {
-			failed = 1;
+		// Check the start is aligned
+		if ((mem_start_align % align) != 0) {
+			pRet = NULL; // Not aligned
+#if RDSP_ENABLE_PRINTF
+			(void)printf("The requested memory is not aligned.\n");
+#endif
+		}
+		else {
+			// Cast aligned uintptr_t t to void* after pointer arithmetic
+			pRet = (void*)mem_start_align;
+			ext_mem_nextptr = (void*)mem_end_align;
+			ext_mem_bytes_left -= mem_size;
+			ext_mem_bytes_used += mem_size;
 		}
 	}
 	else {
-		failed = 1;
-	}
-
-	if (failed == 1) {
-		pRet = (uintptr_t)NULL;
-#ifdef RDSP_ENABLE_PRINTF
-		(void)printf("Not enough memory available or requested alignment not supported!\n");
+		pRet = NULL;
+#if RDSP_ENABLE_PRINTF
+		(void)printf("Not enough memory available! Requested %zu bytes, but only %zu bytes available.\n", Asize, ext_mem_bytes_left);
 #endif
 	}
-#endif // RDSP_MEMORY_UTILS_USES_STDLIB==1
-
-	return (void*)pRet;
-#endif
+	return pRet;
+#endif // RDSP_ENABLE_MEMCHECK
 }
 
 void rdsp_plugin_free(void* Aptr) {
 #if RDSP_MEMORY_UTILS_USES_STDLIB
-	return free(Aptr);
+#if _WIN32
+	_aligned_free(Aptr);
+#else
+	free(Aptr);
+#endif
 #else
 	// extmem should be free'd outside
 #endif
@@ -159,46 +177,65 @@ void rdsp_plugin_scratch_reset(void) {
 
 void* rdsp_plugin_scratch_malloc(size_t Asize, MemAlign_t Aalign) {
 	// Pointer to the start of the aligned memory section
-	uintptr_t pRet = (uintptr_t)NULL;
+	void* pRet = NULL;
+	size_t align = (size_t)Aalign; // Must cast enum to 32/64 bit int type
 
-	// Ensure pointer is aligned in case previous malloc had a different alignment
-	uintptr_t tmp = (uintptr_t)ext_mem_scratch_nextptr;
-	uintptr_t mem_start = (tmp + ((size_t)Aalign - 1)) & ~(uintptr_t)((size_t)Aalign - 1);
+	// Ensure next pointer is aligned in case previous malloc had a different alignment
+	uintptr_t mem_next = (uintptr_t)ext_mem_scratch_nextptr; // Use uintptr_t for pointer arithmetic
+	uintptr_t mem_start_align = (mem_next + (align - 1)) & ~(align - 1);
 
-	// Compute total memory size including added alignment
-	size_t aligned_size = (Asize + (size_t)Aalign - 1) & ~((size_t)Aalign - 1);
-	uintptr_t mem_end = mem_start + aligned_size;
-	size_t mem_size = mem_end - (uintptr_t)ext_mem_scratch_nextptr;
+	// Compute memory size requested including added alignment
+	size_t aligned_size = (Asize + (align - 1)) & ~(align - 1);
+	uintptr_t mem_end_align = mem_start_align + aligned_size;
 
-	/* For heap memory analysis */
+	// Compute total memory size including aligned start/end
+	size_t mem_size = mem_end_align - mem_next;
+
+	// For heap memory analysis
 	if (extmem_analysis_mode_flag == 1) {
 		ext_mem_scratch_bytes_used += mem_size;
+
+		// Check if max scratch memory usage has increased
 		if (ext_mem_scratch_bytes_used > ext_mem_scratch_max_bytes_used) {
 			ext_mem_scratch_max_bytes_used = ext_mem_scratch_bytes_used;
 		}
-		return (void*) 0xFFFF;
+
+		return (void*)0xFFFF;
 	}
 
-#if RDSP_MEMORY_UTILS_USES_STDLIB
-	pRet = malloc(aligned_size);
-#else
 	// Only allocate if we have enough memory
 	if (ext_mem_scratch_bytes_left >= mem_size) {
-		pRet = mem_start;
-		ext_mem_scratch_nextptr = (void*)mem_end;
-		ext_mem_scratch_bytes_left -= mem_size;
-		ext_mem_scratch_bytes_used += mem_size;
-		if (ext_mem_scratch_bytes_used > ext_mem_scratch_max_bytes_used) {
-			ext_mem_scratch_max_bytes_used = ext_mem_scratch_bytes_used;
+#if RDSP_MEMORY_UTILS_USES_STDLIB
+		mem_start_align = ALIGNED_MALLOC(Asize, align);
+#endif // RDSP_MEMORY_UTILS_USES_STDLIB
+
+		// Check the start is aligned
+		if ((mem_start_align % align) != 0) {
+			pRet = NULL; // Not aligned
+#if RDSP_ENABLE_PRINTF
+			(void)printf("The requested memory is not aligned.\n");
+#endif
+		}
+		else {
+			// Cast aligned uintptr_t t to void* after pointer arithmetic
+			pRet = (void*)mem_start_align;
+			ext_mem_scratch_nextptr = (void*)mem_end_align;
+			ext_mem_scratch_bytes_left -= mem_size;
+			ext_mem_scratch_bytes_used += mem_size;
+
+			// Check if max scratch memory usage has increased
+			if (ext_mem_scratch_bytes_used > ext_mem_scratch_max_bytes_used) {
+				ext_mem_scratch_max_bytes_used = ext_mem_scratch_bytes_used;
+			}
 		}
 	}
 	else {
-#ifdef RDSP_ENABLE_PRINTF
-		(void)printf("Not enough memory available! Requested %z scratch bytes but only %z scratch bytes available.\n", Asize, ext_mem_scratch_bytes_left);
+		pRet = NULL;
+#if RDSP_ENABLE_PRINTF
+		(void)printf("Not enough memory available! Requested %zu scratch bytes but only %zu scratch bytes available.\n", Asize, ext_mem_scratch_bytes_left);
 #endif
 	}
-#endif // RDSP_MEMORY_UTILS_USES_STDLIB
-	return (void*)pRet;
+	return pRet;
 }
 
 /*
@@ -210,28 +247,28 @@ void* rdsp_plugin_memset(void* Aptr, uint8_t Aval, size_t Asize) {
 	return memset(Aptr, Aval, Asize);
 #else
     // Replicate val from 8b to 32b
-    uint32_t val32;
-    uint8_t* val8 = (uint8_t*)&val32;
+	uint32_t val32;
+	uint8_t* val8 = (uint8_t*)&val32;
 	size_t i;
-    for (i = 0; i < 4; i++) {
-        val8[i] = Aval;
-    }
+	for (i = 0; i < 4; i++) {
+		val8[i] = Aval;
+	}
 
-    // Set 32b chunks
-    i = 0;
-    size_t* ptr32 = (uint32_t*)Aptr;
-    for (; i < Asize >> 2; i++) {
-        *ptr32++ = val32;
-    }
+	// Set 32b chunks
+	i = 0;
+	size_t* ptr32 = (uint32_t*)Aptr;
+	for (; i < Asize >> 2; i++) {
+		*ptr32++ = val32;
+	}
 
-    // Do the rest
-    uint8_t* ptr8 = (uint8_t*)ptr32;
+	// Do the rest
+	uint8_t* ptr8 = (uint8_t*)ptr32;
 	size_t rem = Asize - (i << 2);
-    while (rem-- > 0) {
-        *ptr8++ = Aval;
-    }
+	while (rem-- > 0) {
+		*ptr8++ = Aval;
+	}
 
-    return Aptr;
+	return Aptr;
 #endif
 }
 
@@ -274,22 +311,22 @@ void* rdsp_plugin_memcpy(void* Adest, const void* Asrc, size_t Asize) {
 #if RDSP_MEMORY_UTILS_USES_STRING
 	return memcpy(Adest, Asrc, Asize);
 #else
-	uint32_t* src32 = (uint32_t*) Asrc;
-	uint32_t* dst32 = (uint32_t*) Adest;
+	uint32_t* src32 = (uint32_t*)Asrc;
+	uint32_t* dst32 = (uint32_t*)Adest;
 	size_t i = 0;
-	for(; i < Asize >> 2; i++) {
+	for (; i < Asize >> 2; i++) {
 		*dst32++ = *src32++;
 	}
 
 	// Do the rest
-	uint8_t *src8 = (uint8_t *) src32;
-	uint8_t *dst8 = (uint8_t *) dst32;
+	uint8_t* src8 = (uint8_t*)src32;
+	uint8_t* dst8 = (uint8_t*)dst32;
 	size_t rem = Asize - (i << 2);
 	while (rem-- > 0) {
 		*dst8++ = *src8++;
 	}
 
-    return Adest;
+	return Adest;
 #endif
 }
 
@@ -340,8 +377,8 @@ int32_t rdsp_plugin_memcompare(void* Ax, void* Ay, size_t Asize) {
 #if RDSP_MEMORY_UTILS_USES_STRING
 	return memcmp(Ax, Ay, Asize);
 #else
-	const uint32_t *x32 = (const uint32_t *) Ax;
-	const uint32_t *y32 = (const uint32_t *) Ay;
+	const uint32_t* x32 = (const uint32_t*)Ax;
+	const uint32_t* y32 = (const uint32_t*)Ay;
 	size_t i = 0;
 	for (; i < Asize >> 2; i++) {
 		if (*x32++ != *y32++) {
@@ -351,8 +388,8 @@ int32_t rdsp_plugin_memcompare(void* Ax, void* Ay, size_t Asize) {
 
 	// Do the rest
 	size_t rem = Asize - (i << 2);
-	const uint8_t *x8 = (const uint8_t *) x32;
-	const uint8_t *y8 = (const uint8_t *) y32;
+	const uint8_t* x8 = (const uint8_t*)x32;
+	const uint8_t* y8 = (const uint8_t*)y32;
 	while (rem-- > 0) {
 		if (*x8++ != *y8++) {
 			return 1;

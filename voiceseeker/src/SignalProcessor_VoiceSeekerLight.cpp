@@ -66,7 +66,7 @@ namespace SignalProcessor {
 		vsl_config.aec_filter_length_ms = RDSP_AEC_FILTER_LENGTH_MS;
 
 #if defined CortexA55
-		vsl_config.device_id = Device_IMX93_CA55;
+		vsl_config.device_id = Device_IMX9_CA55;
 #elif defined CortexA53
 		vsl_config.device_id = Device_IMX8M_CA53;
 #else

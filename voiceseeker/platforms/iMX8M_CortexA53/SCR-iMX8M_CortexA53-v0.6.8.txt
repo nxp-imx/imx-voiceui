@@ -1,22 +1,23 @@
 NXP Software Content Register
 
-Release - VoiceSeeker_v0.6.7
+Release - VoiceSeeker_v0.6.8
 
-Outgoing License: LA_OPT_NXP_Software_License v44 March 2023 - Appendix A: NXP Voice Software applies.
-License File:     license.txt
+Outgoing License: LA_OPT_NXP_Software_License v49 September 2023 - Appendix A: NXP Voice Software applies.
+License File:     LICENSE.txt
 
-Release tag: v0.6.7
+Release tag: v0.6.8
 
 --------------------------------------------
 
 Package:                    libvoiceseeker.a
-Version:                    0.6.7
-Outgoing License:           LA_OPT_NXP_Software_License v44 March 2023 - Appendix A: NXP Voice Software applies.
+Version:                    0.6.8
+Outgoing License:           LA_OPT_NXP_Software_License v49 September 2023 - Appendix A: NXP Voice Software applies.
 License File:               ./LICENSE.txt
 Package Category:           library
-Type of Content:            binary
+Type of Content:            binary and headers
 Description and comments:   Multi-microphone audio-front-end with acoustic echo cancellation.
-Release Location:           ./lib/libvoiceseeker.a
+Release Location:           ./include
+							./lib/libvoiceseeker.a
 							./lib/libvoiceseeker_no_aec.a
 Origin:                     NXP (proprietary)
 							NE10 - https://github.com/projectNe10/Ne10 (BSD-3-Clause)

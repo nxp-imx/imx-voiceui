@@ -1,7 +1,7 @@
 VERSION = 2.0
 
 ifeq ($(BUILD_ARCH),CortexA55)
-	VS_PATH = ./platforms/iMX93_CortexA55
+	VS_PATH = ./platforms/iMX9_CortexA55
 else
 	BUILD_ARCH = CortexA53
 	VS_PATH = ./platforms/iMX8M_CortexA53
@@ -23,24 +23,21 @@ AFE_DIR = ../utils/afe_config
 
 VS_DIR1 = $(VS_PATH)/include
 VS_DIR2 = $(VS_PATH)/rdsp_utilities_public/include
-VS_DIR3 = $(VS_PATH)/rdsp_utilities_public/rdsp_io_public
-VS_DIR4 = $(VS_PATH)/rdsp_utilities_public/rdsp_memory_utils_public
+VS_DIR3 = $(VS_PATH)/rdsp_utilities_public/rdsp_memory_utils_public
 
 CPPFLAGS += -O3 -DNDEBUG -DRDSP_DISABLE_FILEIO -Wno-format-security
-LIBRARY = $(VS_PATH)/Lib/$(VS_LIB) $(NE10_DIR)/lib/libNE10.a
+LIBRARY = $(VS_PATH)/lib/$(VS_LIB) $(NE10_DIR)/lib/libNE10.a
 
 INCLUDES = $(addprefix -I, ./include $(VS_DIR1)		\
-		$(VS_DIR2) $(VS_DIR3) $(VS_DIR4) $(AFE_DIR)	\
+		$(VS_DIR2) $(VS_DIR3) $(AFE_DIR)			\
 		$(NE10_DIR)/include $(RDSP_DIR)/src)
 
 SRCS =	./src/SignalProcessor_VoiceSeekerLight.cpp 	\
 		$(RDSP_DIR)/src/RdspWavfile.cpp 			\
 		$(RDSP_DIR)/src/RdspAppUtilities.cpp 		\
 		$(AFE_DIR)/AFEConfigState.cpp 				\
-		$(VS_DIR3)/RdspFileUtilsPublic.c 			\
-		$(VS_DIR3)/RdspStringUtilsPublic.c 			\
-		$(VS_DIR4)/RdspMemoryUtilsPublic.c 			\
-		$(VS_DIR4)/memcheck.c
+		$(VS_DIR3)/RdspMemoryUtilsPublic.c 			\
+		$(VS_DIR3)/memcheck.c
 
 vpath %.cpp $(dir $(SRCS))
 vpath %.c $(dir $(SRCS))
