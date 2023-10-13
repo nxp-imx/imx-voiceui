@@ -40,7 +40,14 @@ namespace SignalProcessor {
 		mq_offset = mq_open("/voicespot_offset", O_CREAT | O_WRONLY, 0644, &attr);
 
 		//Create VoiceSpot control structure
-		voicespot_status = rdspVoiceSpot_CreateControl(&voicespot_control, data_type);
+#if defined (CortexA55)
+        RDSP_DeviceId_en device_id = Device_IMX9_CA55;
+#elif defined (CortexA53)
+        RDSP_DeviceId_en device_id = Device_IMX8M_CA53;
+#else
+        RDSP_DeviceId_en device_id = Device_IMX8M_CA53;
+#endif
+		voicespot_status = rdspVoiceSpot_CreateControl(&voicespot_control, data_type, device_id);
 		printf("rdspVoiceSpot_CreateControl: voicespot_status = %d\n", (int32_t)voicespot_status);
 
 		//Create VoiceSpot instance

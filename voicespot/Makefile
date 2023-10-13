@@ -1,8 +1,8 @@
 ifeq ($(BUILD_ARCH),CortexA55)
-	VSPOT = ./platforms/iMX93_CortexA55
+	VSPOT = ./platforms/iMX9_CortexA55
 	VIT_PATH = ../vit/platforms/iMX9_CortexA55
 	VIT_LIB = ../vit/platforms/iMX9_CortexA55/lib/libVIT_iMX9_CortexA55_v04_09_00_EngineeringRelease.a
-	VSEEKER = ../voiceseeker/platforms/iMX93_CortexA55
+	VSEEKER = ../voiceseeker/platforms/iMX9_CortexA55
 else
 	BUILD_ARCH = CortexA53
 	VSPOT = ./platforms/iMX8M_CortexA53
@@ -18,7 +18,7 @@ RDSP_DIR = ../utils/rdsp_common_utils
 AFE_DIR = ../utils/afe_config
 AST_DIR = ../utils/audiostream
 
-VS_DIR1 = $(VSPOT)/Lib/include
+VS_DIR1 = $(VSPOT)/lib/include
 VIT_DIR1 = ../vit/src
 
 INC_DIR1 = $(VSEEKER)/include
@@ -26,7 +26,7 @@ INC_DIR2 = $(VSEEKER)/rdsp_utilities_public/include
 INC_DIR3 = $(VSEEKER)/rdsp_utilities_public/rdsp_memory_utils_public
 
 CPPFLAGS += -O3 -DNDEBUG -DRDSP_DISABLE_FILEIO -Wno-format-security
-LIBRARY = 	$(VSPOT)/Lib/librdsp_libvoicespotRPi.a  \
+LIBRARY = 	$(VSPOT)/lib/libvoicespot.a  \
 			$(VIT_LIB) $(NE10_DIR)/lib/libNE10.a
 
 INCLUDES = $(addprefix -I, ./src $(VS_DIR1) 		\

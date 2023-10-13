@@ -1,0 +1,47 @@
+NXP Software Content Register
+
+Release - VoiceSpot_v0.24.1
+
+Outgoing License: LA_OPT_NXP_Software_License v49 September 2023 - Appendix A: NXP Voice Software applies.
+License File:     license.txt
+
+Release tag: v0.24.1
+--------------------------------------------
+
+Package:                    libvoicespot.a
+Version:                    0.24.1
+Outgoing License:           LA_OPT_NXP_Software_License v49 September 2023 - Appendix A: NXP Voice Software applies.
+License File:               ./LICENSE.txt
+Package Category:           library
+Type of Content:            binary and headers
+Description and comments:   Multi-microphone audio-front-end.
+Release Location:           ./lib/libvoicespot.a
+Origin:                     NXP (proprietary)
+							NE10 - https://github.com/projectNe10/Ne10 (BSD-3-Clause)
+							ARM Compute Library - https://github.com/ARM-software/ComputeLibrary (MIT)
+
+--------------------------------------------
+
+Package:                    ARM Compute Library
+Version:                    21.08
+Outgoing License:           MIT
+License File:               /licenses/MIT-ComputeLibrary.txt
+Package Category:           library
+Type of Content:            object code
+Description and comments:   Used for ARM Cortex-A accelerated math.
+Release Location:           ./lib/libvoicespot.a
+Origin:                     https://github.com/ARM-software/ComputeLibrary
+
+--------------------------------------------
+
+Package:                    Ne10
+Version:                    1.2.1
+Outgoing License:           BSD 3-Clause
+License File:               /licenses/BSD-Ne10.txt
+Package Category:           library
+Type of Content:            object code
+Description and comments:   Used for ARM Cortex-A accelerated math.
+Release Location:           ./lib/libvoicespot.a
+Origin:                     https://github.com/projectNe10/Ne10
+
+--------------------------------------------

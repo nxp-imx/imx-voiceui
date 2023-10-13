@@ -13,6 +13,7 @@ NXP Confidential. This software is owned or controlled by NXP and may only be us
 #include "public/rdsp_voicespot_defines.h"
 #include "public/rdsp_voicespot_utils.h"
 #include "public/rdsp_voicespot_sleep_cbuffer.h"
+#include "RdspDeviceConfig.h"
 
 // External API header for RDSP VoiceSpot
 #if defined(__cplusplus) && !defined(CPP_LINKAGE)
@@ -45,7 +46,7 @@ extern int32_t rdspVoiceSpot_SetParameter(rdsp_voicespot_control* voicespot_cont
 extern int32_t rdspVoiceSpot_SetParametersFromBlob(rdsp_voicespot_control* voicespot_control, int32_t voicespot_handle, uint8_t* parameter_blob);
 
 // Create voicespot control
-extern int32_t rdspVoiceSpot_CreateControl(rdsp_voicespot_control** voicespot_control, int32_t data_type);
+extern int32_t rdspVoiceSpot_CreateControl(rdsp_voicespot_control** voicespot_control, int32_t data_type, RDSP_DeviceId_en device_id);
 
 // Release voicespot control and all instances
 extern int32_t rdspVoiceSpot_ReleaseControl(rdsp_voicespot_control* voicespot_control);

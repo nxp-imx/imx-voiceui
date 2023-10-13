@@ -23,19 +23,9 @@ NXP Confidential. This software is owned or controlled by NXP and may only be us
 #include <xtensa/tie/xt_fusion.h>
 #include "NatureDSP_Signal.h"
 #include "NatureDSP_types.h"
-#elif defined(HEMILITE)
-#include "hemilite_fr32_utils.h"
-#elif defined(HMD)
-#include "fr32_utils.h"
-#elif defined(HMD1A)
 #else
 #include <math.h>
 #endif
-
-#if !defined(SIMULATED) && (defined(HEMILITE) || defined(HMD1A) || defined(DMX1A))
-#include "rdsp_plugin_utils.h"
-#endif
-
 
 #ifdef LOG_CC
 FILE* fid_cc_log;
@@ -44,8 +34,8 @@ FILE* fid_cc_log;
 /* Pick Model */
 #include "public/rdsp_voicespot.h"
 #include "public/rdsp_voicespot_utils.h"
-#include "models/Alexa/EN-US/Alexa-en_US_5-rc.h"
-#include "models/Alexa/EN-US/Alexa-en_US_5-rc_params.h"
+#include "models/Alexa/Alexa_en-US/version_6/Alexa_en-US_6.h"
+#include "models/Alexa/Alexa_en-US/version_6/Alexa_en-US_6_params.h"
 #define VOICESPOT_NUM_SAMPLES_PER_FRAME 200
 #define VOICESPOT_SAMPLE_RATE 16000
 #define VOICESPOT_SLEEP_BUFFER_LENGTH (41 * VOICESPOT_NUM_SAMPLES_PER_FRAME)     // Specify the number of samples in the sleep buffer you wish to use here
@@ -255,7 +245,7 @@ int basic_main(int argc, char **argv) {
     }
     wav_file_name_in = argv[i];
 
-#if (defined(HIFI3) || defined(HIFI4) || defined(FUSIONF1) || defined(HEMILITE) || defined(HMD1A) || defined(DMX1A) || defined(HIFI3) || defined(HIFI4))
+#if (defined(HIFI3) || defined(HIFI4) || defined(FUSIONF1))
     const uint32_t plugin_heap_memory_size = 100000 & 0xFFFFFFF0; // Size is multiple of 16
     uint8_t __attribute__((aligned (16))) plugin_heap_memory[plugin_heap_memory_size];
     rdsp_plugin_malloc_init(plugin_heap_memory, plugin_heap_memory, plugin_heap_memory_size);
@@ -311,18 +301,14 @@ int basic_main(int argc, char **argv) {
 
     int32_t voicespot_status;
     rdsp_voicespot_control* voicespot_control; // Pointer to VoiceSpot control struct
-#if defined(HIFI4)
-    int32_t data_type = RDSP_DATA_TYPE__INT32; // Input is int32_t, fixed-point mode computations
-    //int32_t data_type = RDSP_DATA_TYPE__FLOAT32; // Input is int32_t, floating-point mode computations
-#elif defined(HIFI3) || defined(FUSIONF1)
-    int32_t data_type = RDSP_DATA_TYPE__INT32; // Input is int32_t, fixed-point mode computations
-#elif defined(HEMILITE) || defined(HMD) || defined(HMD1A)
+#if defined(HIFI3) || defined(HIFI4) || defined(FUSIONF1)
     int32_t data_type = RDSP_DATA_TYPE__INT32; // Input is int32_t, fixed-point mode computations
 #else
     int32_t data_type = RDSP_DATA_TYPE__FLOAT32; // Input is float, floating-point mode computations
 #endif
 
-    voicespot_status = rdspVoiceSpot_CreateControl(&voicespot_control, data_type); // Create VoiceSpot control structure
+    RDSP_DeviceId_en device_id = Device_DUMMY_DEVICE;
+    voicespot_status = rdspVoiceSpot_CreateControl(&voicespot_control, data_type, device_id); // Create VoiceSpot control structure
     printf("rdspVoiceSpot_CreateControl: voicespot_status = %d\n", (int) voicespot_status);
     int32_t voicespot_handle; // VoiceSpot handle
     int32_t enable_highpass_filter = 1;
@@ -411,10 +397,13 @@ int basic_main(int argc, char **argv) {
     printf("VoiceSpot model version: %d.%d.%d\n", (int) voicespot_version.major, (int) voicespot_version.minor, (int) voicespot_version.patch);
     if (voicespot_model_string != NULL)
         printf("VoiceSpot model string: %s\n", voicespot_model_string);
+    
+    // Comment out while working on changing the filterbank config
     if (VOICESPOT_NUM_SAMPLES_PER_FRAME != num_samples_per_frame) {
         printf("Error: Mismatch in frame size\n");
         return -1;
     }
+
     int32_t num_frames_per_second = VOICESPOT_SAMPLE_RATE / num_samples_per_frame;
 
     // Adaptive power state modes
@@ -461,11 +450,6 @@ int basic_main(int argc, char **argv) {
         }
     }
     
-#if !defined(SIMULATED) && (defined(HEMILITE) || defined(HMD1A) || defined(DMX1A))
-    uint32_t nb = rdsp_plugin_malloc_GetNumAllocatedBytes();
-    printf("VoiceSpot allocated %u bytes\n", nb);
-#endif
-
     int32_t** sfb_output = NULL;
     if (generate_output)
         sfb_output = (int32_t**) rdsp_malloc(num_samples_per_frame * sizeof(uint32_t));
@@ -555,10 +539,8 @@ int basic_main(int argc, char **argv) {
                 for (int32_t i = 0; i < num_samples_per_frame; i++) {
 #if defined(HIFI3) || defined(HIFI4) || defined(FUSIONF1)
                     ((int32_t*)frame_buffer)[i] = ((int16_t*)file_buffer)[i] << 16; // Hifi implementation input is 32 bit fixed-point
-#elif defined(HEMILITE) || defined(HMD) || defined(HMD1A)
-                    ((fr32*) frame_buffer)[i] = Q15_to_afloat(((int16_t*) file_buffer)[i]); // Input is afloat
 #else
-                            ((float*)frame_buffer)[i] = ((int16_t*)file_buffer)[i] * (1.0f / 32768.0f); // Input is 32 bit floating-point, here normalized to the interval -1 to +1
+                    ((float*)frame_buffer)[i] = ((int16_t*)file_buffer)[i] * (1.0f / 32768.0f); // Input is 32 bit floating-point, here normalized to the interval -1 to +1
 #endif // HIFI
                 }
             }
@@ -568,8 +550,6 @@ int basic_main(int argc, char **argv) {
                 for (int32_t i = 0; i < num_samples_per_frame; i++) {
 #if defined(HIFI3) || defined(HIFI4) || defined(FUSIONF1)
                     ((int32_t*)frame_buffer)[i] = ((int32_t*)file_buffer)[i]; // Hifi implementation input is 32 bit fixed-point
-#elif defined(HEMILITE) || defined(HMD) || defined(HMD1A)
-                    ((fr32*) frame_buffer)[i] = Q31_to_afloat(((int32_t*) file_buffer)[i]); // Input is afloat
 #else
                             ((float*)frame_buffer)[i] = ((int32_t*)file_buffer)[i] * (1.0f / 2147483648.0f); // Input is 32 bit floating-point, here normalized to the interval -1 to +1
 #endif // HIFI
@@ -770,10 +750,6 @@ int basic_main(int argc, char **argv) {
                     printf("voicespot_trigger_data_hifi3(%i,:) = [%i %i];\n", num_trigger_events, frame_count + 1, scores[score_index]);
 #elif defined(FUSIONF1)
                     printf("voicespot_trigger_data_fusion_f1(%i,:) = [%i %i];\n", num_trigger_events, frame_count + 1, scores[score_index]);
-#elif defined(HEMILITE)
-                    printf("voicespot_trigger_data_hemilite(%i,:) = [%i %i];\n", num_trigger_events, frame_count + 1, scores[score_index]);
-#elif defined(HMD)
-                    printf("voicespot_trigger_data_hemidelta(%i,:) = [%i %i];\n", num_trigger_events, frame_count + 1, scores[score_index]);
 #endif
                 }
             }
