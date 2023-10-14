@@ -32,7 +32,11 @@
 #define	RDSP_VOICESEEKER_LIGHT_APP_VERSION_PATCH	8 // Patch version the app
 
 #define RDSP_ENABLE_VAD 0
+#ifdef AEC
 #define RDSP_ENABLE_AEC 1
+#else
+#define RDSP_ENABLE_AEC 0
+#endif // AEC
 #define RDSP_ENABLE_VOICESPOT 1
 #define RDSP_ENABLE_PAYLOAD_BUFFER 1
 #define RDSP_ENABLE_AGC 0

@@ -7,9 +7,12 @@ else
 	VS_PATH = ./platforms/iMX8M_CortexA53
 endif
 
+MACROS = -D${BUILD_ARCH}
+
 ifdef AEC
 $(info Building with AEC)
 VS_LIB = libvoiceseeker.a
+MACROS += -DAEC
 else
 $(info Building without AEC. Please contact NXP for AEC enablement.)
 VS_LIB = libvoiceseeker_no_aec.a
@@ -56,7 +59,7 @@ $(BUILD_DIR):
 	@mkdir -p $@
 
 %.o: %.cpp
-	$(CXX) $(CPPFLAGS) $(INCLUDES) -D ${BUILD_ARCH} -fPIC -c -o $(BUILD_DIR)/$@ $<
+	$(CXX) $(CPPFLAGS) $(INCLUDES) ${MACROS} -fPIC -c -o $(BUILD_DIR)/$@ $<
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDES) -fPIC -c -o $(BUILD_DIR)/$@ $<

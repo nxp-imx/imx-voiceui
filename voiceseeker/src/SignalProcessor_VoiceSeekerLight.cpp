@@ -43,27 +43,16 @@ namespace SignalProcessor {
 
 		setDefaultSettings(); //Initialize the _signalProcessorSettings to default values
 
-		VoiceSeekerLight_GetConstants(&vsl_constants);
-		//Allocate memory
-		uint32_t heap_req_bytes = VoiceSeekerLight_GetRequiredHeapMemoryBytes(&vsl, &vsl_config) + 200000;
-		void* heap_memory = malloc(heap_req_bytes);
-		if (heap_memory == NULL) {
-			printf("VoiceSeekerLight_Create: failed to allocate for heap_memory\n");
-			return;
-		}
 		/*
 		 * VoiceSeekerLight plugin configuration
 		 */
 
-		vsl.mem.pPrivateDataBase = heap_memory;
-		vsl.mem.pPrivateDataNext = heap_memory;
-		vsl.mem.FreePrivateDataSize = heap_req_bytes;
-
 		vsl_config.num_mics = this->_inputChannelsCount;
-		vsl_config.num_spks = 0;
+		vsl_config.num_spks = RDSP_ENABLE_AEC ? this->_referenceChannelsCount : 0;
 		vsl_config.framesize_out = VOICESEEKER_OUT_NHOP;
 		vsl_config.buffer_length_sec = RDSP_BUFFER_LENGTH_SEC;
 		vsl_config.aec_filter_length_ms = RDSP_AEC_FILTER_LENGTH_MS;
+		vsl_config.create_aec = RDSP_ENABLE_AEC;
 
 #if defined CortexA55
 		vsl_config.device_id = Device_IMX9_CA55;
@@ -103,6 +92,28 @@ namespace SignalProcessor {
 			vsl_config.mic_xyz_mm[3][1] = this->mic[3].y;
 			vsl_config.mic_xyz_mm[3][2] = this->mic[3].z;
 		}
+
+		//Allocate memory
+		uint32_t heap_req_bytes = VoiceSeekerLight_GetRequiredHeapMemoryBytes(&vsl, &vsl_config) + 200000;
+		void* heap_memory = malloc(heap_req_bytes);
+		if (heap_memory == NULL) {
+			printf("VoiceSeekerLight_Create: failed to allocate for heap_memory\n");
+			return;
+		}
+
+		void* scratch_memory = malloc(scratch_size);
+		if (scratch_memory == NULL) {
+			printf("VoiceSeekerLight_Create: failed to allocate for scratch_memory\n");
+			return;
+		}
+
+		vsl.mem.pPrivateDataBase = heap_memory;
+		vsl.mem.pPrivateDataNext = heap_memory;
+		vsl.mem.FreePrivateDataSize = heap_req_bytes;
+		vsl.mem.pScratchDataBase = scratch_memory;
+		vsl.mem.pScratchDataNext = scratch_memory;
+		vsl.mem.FreeScratchDataSize = scratch_size;
+
 		//VoiceSeekerLight creation
 		RdspStatus voiceseeker_status = VoiceSeekerLight_Create(&vsl, &vsl_config);
 		if (voiceseeker_status != OK) {
@@ -112,6 +123,8 @@ namespace SignalProcessor {
 
 		VoiceSeekerLight_Init(&vsl);					//VoiceSeekerLight initialization
 		VoiceSeekerLight_GetConfig(&vsl, &vsl_config);	//Retrieve VoiceSeekerLight configuration
+
+		VoiceSeekerLight_GetConstants(&vsl_constants);
 
 		// Unpack configuration
 		framesize_in = vsl_constants.framesize_in;
