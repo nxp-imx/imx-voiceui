@@ -1,13 +1,13 @@
 ifeq ($(BUILD_ARCH),CortexA55)
 	VSPOT = ./platforms/iMX9_CortexA55
 	VIT_PATH = ../vit/platforms/iMX9_CortexA55
-	VIT_LIB = ../vit/platforms/iMX9_CortexA55/lib/libVIT_iMX9_CortexA55_v04_09_00_EngineeringRelease.a
+	VIT_LIB = ../vit/platforms/iMX9_CortexA55/lib/libVIT_iMX9_CortexA55_v04_09_00.a
 	VSEEKER = ../voiceseeker/platforms/iMX9_CortexA55
 else
 	BUILD_ARCH = CortexA53
 	VSPOT = ./platforms/iMX8M_CortexA53
 	VIT_PATH = ../vit/platforms/iMX8M_CortexA53
-	VIT_LIB = ../vit/platforms/iMX8M_CortexA53/lib/libVIT_iMX8M_CortexA53_v04_09_00_EngineeringRelease.a
+	VIT_LIB = ../vit/platforms/iMX8M_CortexA53/lib/libVIT_iMX8M_CortexA53_v04_09_00.a
 	VSEEKER = ../voiceseeker/platforms/iMX8M_CortexA53
 endif
 
