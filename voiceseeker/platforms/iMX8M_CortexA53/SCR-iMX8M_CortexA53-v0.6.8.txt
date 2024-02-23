@@ -2,7 +2,7 @@ NXP Software Content Register
 
 Release - VoiceSeeker_v0.6.8
 
-Outgoing License: LA_OPT_NXP_Software_License v49 September 2023 - Appendix A: NXP Voice Software applies.
+Outgoing License:   LA_OPT_NXP_Software_License v53 December 2023 - No distribution granted - Section 2.2 applies
 License File:     LICENSE.txt
 
 Release tag: v0.6.8
@@ -11,7 +11,7 @@ Release tag: v0.6.8
 
 Package:                    libvoiceseeker.a
 Version:                    0.6.8
-Outgoing License:           LA_OPT_NXP_Software_License v49 September 2023 - Appendix A: NXP Voice Software applies.
+Outgoing License:   LA_OPT_NXP_Software_License v53 December 2023 - No distribution granted - Section 2.2 applies
 License File:               ./LICENSE.txt
 Package Category:           library
 Type of Content:            binary and headers

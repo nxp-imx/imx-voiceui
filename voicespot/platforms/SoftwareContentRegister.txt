@@ -2,7 +2,7 @@ NXP Software Content Register
 
 Release - VoiceSpot_v0.23.3
 
-Outgoing License: LA_OPT_NXP_Software_License v39 August 2022 - License in Section 2.4 applies.
+Outgoing License:   LA_OPT_NXP_Software_License v53 December 2023 - No distribution granted - Section 2.2 applies
 License File:     license.txt
 
 Release tag: v0.23.3

@@ -1,12 +1,12 @@
 NXP Software Content Register
 
 Package:            imx-voiceUI
-Outgoing License:   LA_OPT_NXP_Software_License v48 July 2023 - Additional distribution license granted - Section 2.3 applies
+Outgoing License:   LA_OPT_NXP_Software_License v53 December 2023 - No distribution granted - Section 2.2 applies
 License File:       EULA.txt
 Release Location:   https://github.com/nxp-imx/imx-voiceui
 
 Component:          VoiceSeeker_wrapper
-Outgoing License:   LA_OPT_NXP_Software_License v48 July 2023 - Additional distribution license granted - Section 2.3 applies
+Outgoing License:   LA_OPT_NXP_Software_License v53 December 2023 - No distribution granted - Section 2.2 applies
 Type of Content:    source
 Description:        providing a unified calling interface for audio-front-end
 Origin:             NXP (proprietary)
@@ -14,7 +14,7 @@ Origin:             NXP (proprietary)
                     https://github.com/zeux/pugixml (MIT)
 
 Component:          Voice_UI_Test_app
-Outgoing License:   LA_OPT_NXP_Software_License v48 July 2023 - Additional distribution license granted - Section 2.3 applies
+Outgoing License:   LA_OPT_NXP_Software_License v53 December 2023 - No distribution granted - Section 2.2 applies
 Type of Content:    source
 Description:        User space test application for voice detection
 Origin:             NXP (proprietary)
@@ -23,7 +23,7 @@ Origin:             NXP (proprietary)
                     https://github.com/ARM-software/CMSIS_5 (Apache-2.0)
 
 Component:          voiceseeker_release (no AEC)
-Outgoing License:   LA_OPT_NXP_Software_License v48 July 2023 - Additional distribution license granted - Section 2.3 applies
+Outgoing License:   LA_OPT_NXP_Software_License v53 December 2023 - No distribution granted - Section 2.2 applies
 Type of Content:    Precompiled libraries, header files
 Description:        VoiceSeeker Release without Acoustic Echo Cancellation (the no AEC build)
 Origin:             NXP (proprietary)
@@ -31,7 +31,7 @@ Origin:             NXP (proprietary)
                     https://github.com/zeux/pugixml (MIT)
 
 Component:          voicespot_release
-Outgoing License:   LA_OPT_NXP_Software_License v48 July 2023 - License in Section 2.4 applies.
+Outgoing License:   LA_OPT_NXP_Software_License v53 December 2023 - No distribution granted - Section 2.2 applies
 Type of Content:    Precompiled libraries, header files
 Description:        Wake-word detection for voice UI
 Origin:             NXP (proprietary)
@@ -39,7 +39,7 @@ Origin:             NXP (proprietary)
                     https://github.com/projectNe10/Ne10 (BSD 3-Clause)
 
 Component:          VIT
-Outgoing License:   LA_OPT_NXP_Software_License v48 July 2023 - Additional distribution license granted - Section 2.3 applies
+Outgoing License:   LA_OPT_NXP_Software_License v53 December 2023 - No distribution granted - Section 2.2 applies
 Type of Content:    Precompiled libraries, header files
 Description:        Cortex-A Voice Intelligent Technology library
 Origin:             NXP (proprietary)
